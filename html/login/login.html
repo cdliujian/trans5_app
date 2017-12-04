@@ -152,28 +152,37 @@ apiready=function(){
 	    		return false;
 			} else{
 				var param = {
-				              "headers":{"from":"rest","Content-Type":"application/x-www-form-urlencoded"},
 
-				              "data" : {"values":{"username_":$('#username').val(),"password_":$('#password').val()}}
-				            }
-				var url = "security_check_"
-			    ajax(url,param,null,null,function(ret){
-			       api.alert({msg:JSON.stringify(ret)})
-			       if(ret.code=="1000"){
+				$.ajax({ url: serverUrl+"security_check_",
+			          headers: {
+			               session_id:guid(),from:"rest",
+			               
+			           },
+			           method:"POST",
+			          data:{"username_": $('#username').val(), "password_": $('#password').val()}
+			  
+			  
+			  }).success(function(data){
+			  
+			       var ret = JSON.parse(data);
+			       if(ret.code==1000 && ret.data.retCode=="-1"){
+			          
+
 			          var fcr = ret.data.fcr;
+			          api.alert({msg:fcr})
 			          $api.setStorage("userinfo",{"username":$('#username').val(),"fcr":fcr});
 
-                // var param = {
-                //               "headers":{"from":"rest","Content-Type":"application/x-www-form-urlencoded"},
-                //
-                //               "data" : {}
-                //             }
-                // var url = "bi/MallGoodsAction/queryMallGoods"
-                //   ajax(url,param,null,null,function(ret){
-                //        api.alert(JSON.stringify(ret));
-                // 	});
+			          param = {"goodName":"机油"}
+				            
+				           
+			       }else{
+			          api.alert({msg:JSON.stringify(ret)});
+
 			       }
-			    });
+			  
+			  });
+				          
+			    
 			}
 
    });

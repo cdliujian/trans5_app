@@ -1,4 +1,4 @@
-var serverUrl = "https://2.trans5.cn/trans5/";
+var serverUrl = "http://192.168.3.14:8116/trans5/";
 
 
 
@@ -11,7 +11,7 @@ function ajax(url,param, sendFun, compFun, callBack) {
    if(param.headers)
        params.headers = param.headers
    else   
-       params.headers = {"from":"rest","Content-Type":"application/x-www-form-urlencoded"};
+       params.headers = {"from":"rest"};
        
     params.headers.session_id = guid();
    //params.headers = {"session_id":guid()};
@@ -27,7 +27,10 @@ function ajax(url,param, sendFun, compFun, callBack) {
    else{
       params.data = {"body":param}
    }
+   if(param.dataType)
+      params.dataType = param.dataType;
    api.alert({msg:JSON.stringify(params)});
+   
    api.ajax(params,function(ret,err){
    	   if(ret){
    	       if(ret.data.retCode && ret.data.retCode=="-2"){
@@ -45,6 +48,9 @@ function ajax(url,param, sendFun, compFun, callBack) {
    	       api.alert({ msg: JSON.stringify(err) });
    	   }
    });   
+   
+  
+
 
 }
 
@@ -52,5 +58,5 @@ function S4() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
     }
 function guid() {
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    return (S4()+"-"+S4()+"-"+S4()+S4()+S4()+S4()+S4()+S4());
 }
