@@ -142,21 +142,17 @@ apiready=function(){
 				error_msg("请输入账号",function(){
 				   $($('#username').val()).focus();
 				})
-	    		
+
 	    		return false;
 	   		}else if ($('#password').val() == null || $('#password').val() == '') {
 				error_msg("请输入密码",function(){
 				   $($('#password').val()).focus();
 				})
-	    		
+
 	    		return false;
 			} else{
 				var param = {
-				              "headers":{"from":"rest"},
-				              "dataType": "text",
-				              "data" : {"values":{"username_":$('#username').val(),"password_":$('#password').val()}}
-				            }
-				var url = encodeURIComponent("security_check_") 
+
 				$.ajax({ url: serverUrl+"security_check_",
 			          headers: {
 			               session_id:guid(),from:"rest",
@@ -171,23 +167,26 @@ apiready=function(){
 			       var ret = JSON.parse(data);
 			       if(ret.code==1000 && ret.data.retCode=="-1"){
 			          
+
 			          var fcr = ret.data.fcr;
 			          api.alert({msg:fcr})
 			          $api.setStorage("userinfo",{"username":$('#username').val(),"fcr":fcr});
+
 			          param = {"goodName":"机油"}
 				            
 				           
 			       }else{
 			          api.alert({msg:JSON.stringify(ret)});
+
 			       }
 			  
 			  });
 				          
 			    
 			}
-   
+
    });
-   
+
 
 }
 </script>
