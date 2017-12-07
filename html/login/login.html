@@ -119,19 +119,12 @@
     </div>
 </div>
 <script type="text/javascript" src="script/mui.min.js"></script>
-<script src="script/fastclick.js"></script>
 <script type="text/javascript" src="script/api.js"></script>
 <script type="text/javascript" src="script/jquery.min.js"></script>
 <script type="text/javascript" src="script/amazeui.min.js"></script>
 <script type="text/javascript" src="script/amazeui-message-pop.js"></script>
 <script type="text/javascript" src="script/common.js"></script>
 <script type="text/javascript">
-if ('addEventListener' in document) {
-    	  document.addEventListener('DOMContentLoaded', function() {
-    	    FastClick.attach(document.body);
-    	  }, false);
-}    
-
 apiready=function(){
 
    api.addEventListener({
@@ -144,21 +137,17 @@ apiready=function(){
 		});
 
 
-   $("#login").click(function(){
-        if($('#username').val() == null || $('#username').val() == ''){
-				api.toast({
-	                msg:'请输入账号'
-                });
+   		$("#login").click(function(){
+        	if($('#username').val() == null || $('#username').val() == ''){
+				error_msg("请输入账号",function(){
 				   $($('#username').val()).focus();
-				
+				})
 	    		
 	    		return false;
 	   		}else if ($('#password').val() == null || $('#password').val() == '') {
-	   		    api.toast({
-	                msg:'请输入密码'
-                });
+				error_msg("请输入密码",function(){
 				   $($('#password').val()).focus();
-				
+				})
 	    		
 	    		return false;
 			} else{
@@ -169,39 +158,34 @@ apiready=function(){
 				            }
 				var url = encodeURIComponent("security_check_") 
 				$.ajax({ url: serverUrl+"security_check_",
-			          headers: {
-			               session_id:guid(),from:"rest",
+			             headers: {
+			               			session_id:guid(),from:"rest",
 			               
-			           },
-			           method:"POST",
-			          data:{"username_": $('#username').val(), "password_": $('#password').val()}
+			             },
+			             method:"POST",
+			             data:{"username_": $('#username').val(), "password_": $('#password').val()}
 			  
 			  
-			  }).success(function(data){
-			  
+			  	}).success(function(data){		
 			       var ret = JSON.parse(data);
 			       if(ret.code==1000 && ret.data.retCode=="1"){
 			          
 			          var fcr = ret.data.fcr;
-			          api.alert({msg:fcr})
+			          //api.alert({msg:fcr})
 			          $api.setStorage("userinfo",{"username":$('#username').val(),"fcr":fcr});
-			          api.openWin({
-					        name: 'root',
-					        url: '../../index.html',
-					        slidBackEnabled:false
-				        });
-				            
+				      api.openWin({name: "queryMainPage", url: "../parts/queryMain.html"});     
+			          param = {"goodName":"机油"} 
 				           
 			       }else{
 			          api.alert({msg:JSON.stringify(ret)});
 			       }
 			  
-			  });
+			  	});
 				          
 			    
 			}
    
-   });
+   		});
    
 
 }

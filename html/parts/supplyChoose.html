@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<title>选择供应商</title>
+</head>
+<body class="bg-thingray t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		选择供应商
+	</div>
+</header>
+<div class="mui-content pbottom49">
+    <div class="xzgys-checkbox" id="isInvoiceDIV">
+        <div class="mui-input-row mui-checkbox mui-block t13 mui-text-center sc-truncate">
+            <label class="">
+                <input class="mtop3" type="checkbox" name="checkbox" id="isInvoice">
+                如果需要发票，请勾选此复选框
+            </label>
+        </div>
+    </div>
+	<div id="supplierDIV">
+	</div>
+</div>
+<div class="mfooter">
+	<a class="mui-block" href="javascript: subSelect();">确定</a>
+</div>
+
+<script id="tplSupplierTable" type="text/html">
+	<div class="bg-white mbottom10">
+		<div class="xzgys-top p10 pbottom0">
+			<div class="mui-input-row mui-checkbox mui-left border-bottom">
+				<label>
+					<div class="xzgys-top-t">
+						<span class="xzgys-top-th">{{item.dept.name}}</span><span class="t1001">{{item.dept.code}}</span>
+						{{if item.cusmer.isPower == 1}}<img src="images/xunjia-maipeijian/piao.png" width="15" height="15"> <img src="images/xunjia-maipeijian/t.png" width="15" height="15">{{/if}} 
+					</div>
+					{{if item.sender != null && item.sender.starts == 10}} <img src="images/xunjia-maipeijian/star.png" height="10">{{/if}}
+				</label>
+				<input class="mtop3" name="checkbox" type="checkbox" value="{{i}}">
+			</div>
+			<div class="xzgys-c ptop10 pbottom6 t13">
+				<span class="c999">电话</span>
+				<div class="xzgys-c-r">{{if item.sender != null}}{{item.sender.telphone == undefined ? "" : item.sender.telphone}}{{/if}}</div>
+			</div>
+			<div class="xzgys-c ptop6 pbottom6 t13">
+				<span class="c999">地址</span>
+				<div class="xzgys-c-r">{{item.dept.address == undefined ? "" : item.dept.address}}</div>
+			</div>
+			<div class="xzgys-c ptop6 pbottom6 t13">
+				<span class="c999">主营</span>
+				<div class="xzgys-c-r">{{if item.sender != null}}{{item.sender.businessscope == undefined ? "" : item.sender.businessscope}}{{/if}}</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</script>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/amazeui.min.js"></script>
+<script type="text/javascript" src="script/amazeui-message-pop.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var isInvoicePower = false, brandId = "", isInvoice = "";
+	apiready = function(){
+		isInvoicePower = api.pageParam.isInvoicePower;
+		brandId = api.pageParam.brandId;
+		
+		if(!isInvoicePower) {
+			$("#isInvoiceDIV").hide();
+			isInvoice = "";
+		}
+		//根据品牌查询供应商
+		selectSupplyByBrand(brandId);
+	};
+
+
+	function close() {
+		api.closeWin({name: "supplyChoosePage"});
+	}
+
+	//根据品牌查询供应商
+	function selectSupplyByBrand(brandId) {
+		$("#supplierDIV").html("");
+		$.ajax({ url: serverUrl+"bi/RangeAction/getRangeBrands",
+				 headers: {
+					       session_id:guid(),from:"rest",			               
+					      },
+			  	 method:"POST",
+				 contentType : 'application/json',
+			  	 data:JSON.stringify({"brandId":parseInt(brandId)})
+		}).success(function(data){	
+			if(data) {
+				var ret = JSON.parse(data);
+				if (ret.code != 1000) {
+					api.toast({"msg":ret.message});
+					return;
+				} 
+				if(ret.data == null) {
+					close();
+					return;
+				}
+				
+				if(ret.data.Ranges.length == 0) {
+					api.toast({"msg":"此品牌暂时还没有符合平台要求的诚信供应商！"});
+					close();
+					return;
+				}
+				
+				var vlist=ret.data.Ranges;
+				var blist=new Array();
+				for (var i = 0; i < vlist.length; i++) {
+					if(vlist[i].cusmer!=null && (!$('#isInvoice').prop('checked') || ($('#isInvoice').prop('checked') == 0 && vlist[i].cusmer.isPower == 1))){
+						//需要开票时，只显示增税资质审核通过的金融供应商，不需要开票时，显示所有的金融供应商
+						blist.push(vlist[i]);
+					}
+				}
+			 	for(var i=0;i<blist.length-1;i++){  
+			        for(var j=i+1;j<blist.length;j++){  
+			            if(blist[i].cusmer.sucessAskAmount>blist[j].cusmer.sucessAskAmount){//如果前面的数据比后面的大就交换  
+			                var temp=blist[i];  
+			                blist[i]=blist[j];  
+			                blist[j]=temp;  
+			            }   
+			        }  
+			    }   
+				selectList=blist;
+				var count_ = 0;
+				for (var i = selectList.length-1; i >= 0; i--) {
+					var item=selectList[i];
+					console.log(item);
+					if(item.cusmer!=null){
+						var askTime=item.cusmer.askTime==null?0:item.cusmer.askTime;
+						var Amount=item.cusmer.sucessAskAmount==null?0:item.cusmer.sucessAskAmount;
+						var checked = "";
+						if(count_ < 3) {
+							//checked = "checked='true';"
+						}				
+					
+				   		var supplierHtml=template("tplSupplierTable", {"item" : item, "i" : i});
+						$("#supplierDIV").html($("#supplierDIV").html() + supplierHtml);  
+					
+						count_++;
+					}
+				}
+				if($("#supplierDIV").html() == "") {
+					api.toast({"msg":"此品牌暂时还没有符合平台要求的诚信供应商！"});
+					close();
+					return;
+				}
+			}
+		});
+	}
+	
+	//确定
+	function subSelect() {
+		if(isInvoicePower && $('#isInvoice').prop('checked')) {
+			//开票
+			isInvoice = 0;
+		} else if(isInvoicePower && !$('#isInvoice').prop('checked')) {
+			//不开票
+			isInvoice = 1;
+		}
+		
+		var obj = document.getElementsByName("checkbox");
+		var deptnameList="";
+		var deptIdList="";
+		var count = 0;
+		for(k in obj){
+			if(obj[k].checked){
+		     	var index=obj[k].value;
+		      	var o=selectList[index];
+		      	
+		     	deptnameList+=o.dept.name+",";
+		      	deptIdList+=o.deptId+",";
+		        	
+		      	count++;
+		  	}
+		}
+
+		if(count > 3) {
+		 	api.toast({"msg":"供应商不能超过3家！"});
+		 	return false;
+		}
+	    
+		deptnameList=deptnameList.substring(0,deptnameList.length - 1);
+		selectSupplyIds = deptIdList;
+		
+		var jsFun = "selectSupply('" + deptIdList + "','" + deptnameList + "', '" + isInvoice + "')";
+		api.execScript({
+			name: "queryMainPage",
+			script: jsFun
+		});
+	    
+		api.closeWin();
+	}
+</script>
+</html>

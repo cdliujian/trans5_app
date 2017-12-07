@@ -1,5 +1,5 @@
 //var serverUrl = "http://192.168.3.14:8116/trans5/";
-var serverUrl = "https://2.trans5.cn/trans5/";
+var serverUrl = "http://192.168.3.130:8088/trans5/";
 
 
 
@@ -29,22 +29,18 @@ function ajax(url,param, sendFun, compFun, callBack) {
    }
    if(param.dataType)
       params.dataType = param.dataType;
-   api.alert({msg:JSON.stringify(params)});
+   //api.alert({msg:JSON.stringify(params)});
    
    api.ajax(params,function(ret,err){
    	   if(ret){
    	       if(ret.data.retCode && ret.data.retCode=="-2"){
-   	          api.toast({
-	                 msg:ret.data.errMsg
-                 });
-   	          
+   	          error_msg(ret.data.errMsg , function(){
    	              api.openWin({
 				        name: 'applogin',
-				        url: 'html/login/login.html',
-				        slidBackEnabled:false
+				        url: 'html/login/login.html'
 			        });
    	          
-   	          
+   	          })
    	       }
    	       else
    	          callBack(ret)
@@ -64,8 +60,6 @@ function S4() {
 function guid() {
     return (S4()+"-"+S4()+"-"+S4()+S4()+S4()+S4()+S4()+S4());
 }
-
-
 //时间戳转DateTime
 function timeStamp2String (time){
     var datetime = new Date();
@@ -106,7 +100,8 @@ function getUserDeptId(callBack) {
 	}).success(function(data){	
 		var ret = JSON.parse(data);
 		if (ret.code != 1000) {
-			error_msg(ret.message);
+			//error_msg(ret.message);
+			mui.toast(ret.message,{ duration:'long', type:'div' });
 			return;
 		}  
 		/**deptId = ret.data.id;*/
@@ -128,7 +123,7 @@ function pageSizeApp(callBack){
 	}).success(function(data){	
 		var ret = JSON.parse(data);
 		if (ret.code != 1000) {
-			error_msg(ret.message);
+			mui.toast(ret.message,{ duration:'long', type:'div' });
 			return;
 		} 
 		

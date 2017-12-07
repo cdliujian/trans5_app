@@ -17,6 +17,7 @@ input[readonly]{background: #f5f5f5 !important;border:1px solid #ddd !important;
 .btn-del{color: #666;border: 1px solid #ccc;border-radius: 2px;font-size: 1.2rem; padding: 2px 10px;}
 .btn-del:focus,.btn-del:active{color:#666;}
 .mtop10{margin-top:10px;}
+.mtop6{margin-top:6px;}
 .mleft10{margin-left:10px;}
 .mright10{margin-right:10px;}
 .mbottom10{margin-bottom:10px;}

@@ -1,209 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head lang="en">
+<head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-    <link href="./css/mui.min.css" rel="stylesheet" />
-    <link href="./css/style.css" rel="stylesheet" />
-	<link rel="stylesheet" type="text/css" href="./css/app.css"/>
-    <link rel="stylesheet" href="./css/public.css">
-    <link rel="stylesheet" href="./css/main.css">
-    <title>首页</title>
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <style type="text/css">
+    html,body{
+        height: 100%;
+    }
+    #wrap{
+        height: 100%;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+    }
+    #header{
+        text-align: center;
+		background-color: #81a9c3;
+		color: #fff;
+        width: 100%;
+    }
+    #header h1{
+        font-size: 20px;
+		height: 44px;
+		line-height: 44px;
+		margin: 0em;
+		color: #fff;
+    }
+    #main{
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+    }
+    #footer{
+        height: 30px;
+		line-height: 30px;
+        background-color: #81a9c3;
+        width: 100%;
+        text-align: center;
+    }
+    #footer h5{
+        color: white;
+    }
+    .con{
+		font-size: 28px;
+		text-align: center;
+	}
+    </style>
 </head>
-<body class="bg-thingray">
-<header class="mui-bar mui-bar-nav log-header bg-f8f8f8">
-    <h1 class="mui-title">五号车云</h1>
-</header>
-<div class="c333 mui-content pbottom49">
-    <div class="index-img bg-white">
-		<div id="slider" class="mui-slider" >
-			<div class="mui-slider-group mui-slider-loop">
-				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
-				<div class="mui-slider-item mui-slider-item-duplicate">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-				<!-- 第一张 -->
-				<div class="mui-slider-item">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-				<!-- 第二张 -->
-				<div class="mui-slider-item">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-				<!-- 第三张 -->
-				<div class="mui-slider-item">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-				<!-- 第四张 -->
-				<div class="mui-slider-item">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
-				<div class="mui-slider-item mui-slider-item-duplicate">
-					<a href="#">
-						<img src="./images/index/banner.png">
-					</a>
-				</div>
-			</div>
-			<div class="mui-slider-indicator">
-				<div class="mui-indicator mui-active"></div>
-				<div class="mui-indicator"></div>
-				<div class="mui-indicator"></div>
-				<div class="mui-indicator"></div>
-			</div>
-		</div>
-    </div>
-	<div class="bg-white mui-text-center t13 ptop10 pbottom10">
-		<div class="mui-col-xs-4 fl">
-			<img src="./images/index/index-list1.png" width="50" height="50">
-			<span class="mui-block ptop10">买油液易损件</span>
-		</div>
-		<div class="mui-col-xs-4 fl">
-			<img src="./images/index/index-list2.png" width="50" height="50">
-			<span class="mui-block ptop10">询价买配件</span>
-		</div>
-		<div class="mui-col-xs-4 fl">
-			<img src="./images/index/index-list3.png" width="50" height="50">
-			<span class="mui-block ptop10">直接下单</span>
-		</div>
-		<div class="clear"></div>
-	</div>
-	<div class="bg-white mtop10 index-list">
-		<div class="mui-col-xs-6 index-listli fl border-right border-bottom" id="demo">
-			<img class="fl mtop10 mright10 mleft10" src="./images/index/gys-icon1.png" width="22" height="22">
-			<div class="c333 t13 fl">我的询价单 <span class="index-listli-tips">20</span><br><span class="c999 t12">查看订单报价详情</span> </div>
-		</div>
-		<div class="mui-col-xs-6 index-listli fl border-bottom">
-			<img class="fl mtop10 mright10 mleft10" src="./images/index/gys-icon2.png" width="22" height="22">
-			<div class="c333 t13 fl">我的采购单<br><span class="c999 t12">查看采购订单详情</span> </div>
-		</div>
-		<div class="mui-col-xs-6 index-listli fl border-right">
-			<img class="fl mtop10 mright10 mleft10" src="./images/index/gys-icon3.png" width="22" height="22">
-			<div class="c333 t13 fl">我的退货单<br><span class="c999 t12">查看所有退货信息</span> </div>
-		</div>
-		<div class="mui-col-xs-6 index-listli fl">
-			<img class="fl mtop10 mright10 mleft10" src="./images/index/gys-icon4.png" width="22" height="22">
-			<div class="c333 t13 fl">我的物流<br><span class="c999 t12">实时查询物流信息</span> </div>
-		</div>
-		<div class="clear"></div>
-	</div>
-	<!-- <div class="bg-white mtop10 p10 t13">
-		<div class="index-yf-h mbottom10">
-			<span class="index-yf-h-t">五号越付</span>
-			<span class="fr index-yf-h-r">什么是五号越付？</span>
-		</div>
-		<div class="clear"></div>
-		<div class="index-img mbottom10"><img src="../images/index/gys-b-banner.png"> </div>
+<body>
 
-	</div> -->
-</div>
-<nav class="mui-bar mui-bar-tab t12">
-	<a class="mui-tab-item mui-active" href="#">
-		<span class="mui-block"><img src="./images/index/gys-icon44.png" width="24" id="homePageImg"> </span>
-		<span class="mui-tab-label c333">首页</span>
-	</a>
-	<a class="mui-tab-item" href="#">
-		<span class="mui-block"><img src="./images/index/gys-icon22.png" width="24" id="supplyeImg"> </span>
-		<span class="mui-tab-label c333">供应商</span>
-	</a>
-	<a class="mui-tab-item" href="#">
-		<span class="mui-block"><img src="./images/index/gys-icon33.png" width="24"> </span>
-		<span class="mui-tab-label c333">账单</span>
-	</a>
-	<a class="mui-tab-item" style="position: relative;" href="#">
-		<span class="index-listli-tips bottom-tips">20</span>
-		<span class="mui-block"><img src="./images/index/gys-icon11.png" width="24"> </span>
-		<span class="mui-tab-label c333">我的</span>
-	</a>
-</nav>
-<script src="./script/mui.min.js"></script>
-<script type="text/javascript" src="./script/api.js"></script>
-<script src="./script/jquery.min.js"></script>
-<script src="./script/fastclick.js"></script>
-<script type="text/javascript" charset="utf-8">
-       if ('addEventListener' in document) {
-    	  document.addEventListener('DOMContentLoaded', function() {
-    	    FastClick.attach(document.body);
-    	  }, false);
-        }    
-			
-			var slider = mui("#slider");
-			
-			$("#demo").click(function(){
-				$("#demo").css("background-color","#f4f4f4")
-			});
-			
-			apiready = function(){
-			    var userinfo = $api.getStorage("userinfo");
-			    if(!userinfo){
-					api.toast({
-					    msg: '登录已过期,请重新登录',
-					    duration: 2000,
-					    location: 'bottom'
-					});
-					
-					
-			    }
-			    api.openWin({
-				        name: 'applogin',
-				        url: './html/login/login.html',
-				        slidBackEnabled:false
-			     });
-			}
-			
-			var preLiName = "homePage";
-			
-			function showIframe(url, liName) {
-				if(oldUrl!=liName){
-					flag=true;
-				}
-				if(flag){
-					var pgindex  = 0;
-		
-					$("#"+preLiName).removeClass("am-active");
-					if(preLiName == "homePage") {
-						$("#homePageImg").attr("src", "./images/index/gys-icon44.png");
-					} else if(preLiName == "supplye") {
-						$("#supplyeImg").attr("src", "./images/index/gys-icon66");
-					} else if(preLiName == "bill") {
-						$("#billImg").attr("src", "web/app/images/icon03.png");
-					} else if(preLiName == "myHome") {
-						$("#myHomeImg").attr("src", "web/app/images/icon04.png");
-					}
-					$("#"+liName).addClass("am-active");
-					var reload = false;
-					if(liName == "homePage") {
-					    pgindex = 0;
-						$("#homePageImg").attr("src", "web/app/images/icon11.png");
-					} else if(liName == "supplye") {
-					    pgindex = 1;
-						$("#supplyeImg").attr("src", "web/app/images/icon2.png");
-					} else if(liName == "bill") {
-					    pgindex = 2;
-						$("#billImg").attr("src", "web/app/images/icon33.png");
-					} else if(liName == "myHome") {
-					    pgindex = 3;
-					    reload = true
-						$("#myHomeImg").attr("src", "web/app/images/icon44.png");
-					}
-					preLiName = liName;
-					api.setFrameGroupIndex({
-					    name: 'indexFrameGroup',
-					    index: pgindex,
-					    reload : reload
-					});
-				}
-			}	
-		</script>
 </body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+		//输出Log，Log将显示在APICloud Studio控制台
+		console.log("Hello APICloud!!!");
+
+        api.openWin({
+	        name: 'applogin',
+	        
+	         url: 'html/login/login.html'
+          //url: 'html/main.html'
+        });
+
+    };
+</script>
 </html>

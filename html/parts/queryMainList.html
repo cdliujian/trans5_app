@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+    <style>
+    	body{
+    		
+    	}
+    </style>
+</head>
+<body class="bg-thingray">
+<header class="am-text-center search-bg search-top">
+    <a class="am-fl pleft10" href="javascript: close();"><img src="images/back-white.png" width="20"> </a>
+    <span class="t20 white">询价订单</span>
+</header>
+<form id='queryMainList-form' class="mui-input-group">
+<div class="am-tabs zd-tabs am-text-sm con-top scroll-wrapper" data-am-tabs="{noSwipe: 1}">
+    <ul class="am-tabs-nav am-nav am-nav-tabs am-nav-justify bg-white">
+        <li class="am-active"><a onclick="changeTab('pjList','');" href="javascript: void(0)">全部</a></li>
+        <li><a onclick="changeTab('pjList1','0');" href="javascript: void(0)">未报价</a></li>
+        <li><a onclick="changeTab('pjList2','1');" href="javascript: void(0)">已报价</a></li>
+        <li><a onclick="changeTab('pjList3','2');" href="javascript: void(0)">已采购</a></li>
+        <li><a onclick="changeTab('pjList4','99');" href="javascript: void(0)">已取消</a></li>
+    </ul>
+    <div class="am-tabs-bd c333">
+        <div class="am-tab-panel am-fade am-in am-active" id="pjList">
+            
+        </div>
+        <div class="am-tab-panel am-fade" id="pjList1">            
+        </div>
+        <div class="am-tab-panel am-fade" id="pjList2">           
+        </div>
+        <div class="am-tab-panel am-fade" id="pjList3">            
+        </div>
+        <div class="am-tab-panel am-fade" id="pjList4">       
+        </div>
+        
+        <div align="center" class="display:none"><a href="javascript:loadMore();" style="font-size: 18px;" id="more">点击加载下一页</a></div>
+    </div>
+</div>
+
+<div class="amz-toolbar am-padding-0 am-margin-0" data-am-smooth-scroll id="amz-toolbar" style="position: fixed;bottom: 98px; right:10px;z-index: 10000; display: none" >
+    <a href="#top" title="回到顶部" class="am-icon-btn am-icon-arrow-up mpeijian-color-gray" id="amz-go-top"></a>
+</div>
+</form>
+
+<script id="tplMainTable" type="text/html">
+{{each mains as main i}} 
+   <div class="bg-white mbottom10 p10 zd-tabs-panellist">
+        <div class="border-bottom am-padding-bottom-sm c999">{{main.brandName}}
+        	<span class="am-fr {{if main.status == 2 || main.status == 1}}alink{{/if}} {{if main.status != 2 && main.status != 1}}c333{{/if}} xjdd-bj">
+        		{{if main.status == 0}}待报价{{/if}}
+        		{{if main.status == 1}}已报价{{/if}}
+        		{{if main.status == 2}}已采购{{/if}}
+        		{{if main.status == 99}}已中止{{/if}}
+        		{{if main.status == 1}}{{main.quoteNum == null ? "" : main.quoteNum}}{{/if}}
+        	</span> 
+        </div>
+        <div class="am-padding-top-sm border-bottom am-padding-bottom-sm">
+            <div class="th-list am-padding-top-xs">
+                <div>
+                	<span class="am-u-sm-3 am-padding-0">车型</span>
+                	<span class="am-u-sm-9 am-padding-right-0 c333">{{main.carModel}}</span>
+                	<div class="am-cf"></div>
+                </div>
+                <div>
+                    <span class="am-u-sm-3 am-padding-0">询价时间</span>
+                    <span class="am-u-sm-9 am-padding-right-0 c333">{{timeStamp2String(main.returnTime)}}</span>
+                    <div class="am-cf"></div>
+                </div>
+            </div>
+        </div>
+   </div>
+{{/each}}
+</script>
+
+</body>
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/amazeui.min.js"></script>
+<script type="text/javascript" src="script/amazeui-message-pop.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var map = {};
+	var type = "pjList";
+	//获取每页显示记录数
+	var iDisplayLength = 0;
+	
+	var djType = {};
+	
+	var status = "";
+	
+	var lastDate = "";
+	var flag = true;
+	apiready = function(){
+		window.fixStatusBar = function(){
+			var statusBarAppearance = api.statusBarAppearance;
+			if(statusBarAppearance){
+				$('header').each(function(){
+					$api.fixStatusBar(this);
+								
+				});
+				$('.scroll-wrapper').each(function(){
+					$api.fixStatusBar(this);
+					$(this).addClass('con-top3')
+				});
+			}else{
+				$('header').addClass('mheader');
+			}
+		};
+		window.fixStatusBar();
+		
+		map["0"] = "待报价";
+		map["1"] = "已报价";
+		map["2"] = "已采购";
+		map["99"] = "已中止";
+		
+		djType["pjList"] = 0;
+		djType["pjList1"] = 0;
+		djType["pjList2"] = 0;
+		djType["pjList3"] = 0;
+		djType["pjList4"] = 0;
+		
+		var param = {
+				     	"headers":{"from":"rest"},
+				     	"dataType": "text"
+					}
+		var url = encodeURIComponent("security_check_") 
+		$.ajax({ url: serverUrl+"bi/param/pagesizeApp",
+				 headers: {
+			              	session_id:guid(),from:"rest",			               
+			              },
+			  	 method:"POST"
+			   }).success(function(data){	
+			   		var ret = JSON.parse(data);
+			       	if (ret.code != 1000) {
+						error_msg(ret.message);
+						return;
+					}  
+					iDisplayLength = ret.data;
+			
+					loadData(0, status , "");
+			});
+	};
+
+	function loadData(startRow, status , change) {
+		var loadIndex = "";
+		var aoData = [];
+		var m = new Object();
+		if(status != "") {
+			aoData.push({"name":"status","value":status});
+			m.status = status;
+		}
+		aoData.push({"name":"iDisplayLength","value":iDisplayLength});
+		aoData.push({"name":"iDisplayStart","value":startRow});
+		
+		aoData.push({"name":"param","value":m});
+		
+		$.ajax({ url: serverUrl+"bi/QueryMainAction/queryList",
+			     headers: {
+			               	session_id:guid(),from:"rest",
+			               
+			     },
+				 method:"POST",
+				 contentType : 'application/json',
+			     data:JSON.stringify({"queryparams":aoData})
+			   }).success(function(data){	
+			   		var ret = JSON.parse(data);
+			   		template.helper("timeStamp2String", timeStamp2String);
+			   		var mainHtml=template("tplMainTable", {"mains" : ret.data.data});
+					$("#"+type).html(mainHtml);  
+			});
+	}
+</script>
+</html>

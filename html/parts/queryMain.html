@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+    <title>发起询价</title>
+</head>
+<body class="bg-thingray t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		发起询价
+	</div>
+</header>
+<div class="mui-content pbottom49">
+	<div class="bg-white mbottom10 p10">
+		<div class="fqxj-list">
+			<input type="text" placeholder="输入17位车架号，默认17个0" id="vin" maxlength="17" onblur="value=value.replace(/[^\w\.\/]/ig,'');" style="text-transform:uppercase;">
+		</div>
+		<a class="fqxj-list-a" href="###">精友定型</a>
+	</div>
+	<div class="bg-white mbottom10 p10 pbottom0">
+		<div class="border-bottom pbottom10">
+			<div class="fqxj-list fqxj-list2">
+				<span class="fqxj-list2-t">品牌</span>
+				<div class="fqxj-list2-pp">
+					<img class="" src="" width="20" id="brandNameImg"> <span id="brandName"></span>
+				</div>
+			</div>
+			<a class="fqxj-list-a" href="javascript: doSearchBrand();">选择品牌</a>
+		</div>
+		<div class="border-bottom">
+			<div class="fqxj-list2">
+				<span class="fqxj-list2-t">车型</span>
+				<div class="fqxj-list2-cx">
+					<input type="text" id="carModel" onblur="stripscript(this);">
+				</div>
+			</div>
+		</div>
+		<div class="">
+			<div class="fqxj-list2">
+				<span class="fqxj-list2-t">供应商</span>
+				<div class="fqxj-list2-gys">
+					<input class="mui-hidden" type="text" readonly="readonly" id="selectDeptNames">
+					<a href="javascript: doSearchSupply();" id="selectDeptNamesA">最多可选择3家供应商发起询价 <span class=" mui-icon mui-icon-arrowright t15 c999"></span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bg-white mbottom10 p10 ptop0 pbottom0">
+		<div class="border-bottom">
+			<div class="fqxj-list2">
+				<span class="fqxj-list2-t">联系人</span>
+				<div class="fqxj-list2-cx">
+					<input type="text" placeholder="请输入你的姓名" id="recContract" onblur="stripscript(this);">
+				</div>
+			</div>
+		</div>
+		<div class="border-bottom">
+			<div class="fqxj-list2">
+				<span class="fqxj-list2-t">电话</span>
+				<div class="fqxj-list2-cx">
+					<input type="text" placeholder="请输入你的联系方式" id="recPhone" onblur="stripscript(this);">
+				</div>
+			</div>
+		</div>
+		<div class="">
+			<div class="fqxj-list2">
+				<span class="fqxj-list2-t">备注</span>
+				<div class="fqxj-list2-cx">
+					<input type="text" id="remark" onblur="stripscript(this);">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="mfooter">
+	<a class="mui-block" href="###" disabled>下一步</a>
+</div>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var deptId = null;
+	var isInvoicePower = false; //是否有增税资质
+	var brandCode = "", selectBrandId = ""; //已选择品牌编码、id
+	var selectSupplyIds = ""; //指定供应商id串
+	var jyFlag = false; //判断是否进行精友定型
+	var isInvoice = ""; //增值税专用发票
+	var QueryMain = new Object();
+	apiready = function(){	         
+		if (/Android/gi.test(navigator.userAgent)) {
+	        window.addEventListener('resize', function () {
+	            if (document.activeElement.tagName == 'INPUT' || document.activeElement.tagName == 'TEXTAREA') {
+	                window.setTimeout(function () {
+	                    document.activeElement.scrollIntoViewIfNeeded();
+	                }, 0);
+	            }
+	        })
+	    }
+	    
+	    deptId = getUserDeptId(function(data) {
+	    	deptId = data.id;
+	    	
+			//初始化是否有增税资质
+			initIsInvoicePower();
+			
+			initRecContractAndPhone();
+	    });
+	};
+	
+	function close() {
+		api.closeWin({name: "queryMainPage"});
+	}
+
+	//初始化是否有增税资质
+	function initIsInvoicePower() {
+		$.ajax({ url: serverUrl+"bi/InvoiceOrgreceiveAction/findByDeptId",
+				 headers: {
+					       session_id:guid(),from:"rest",			               
+					      },
+			  	 method:"POST",
+				 contentType : 'application/json',
+			  	 data:JSON.stringify(deptId)
+		}).success(function(data){
+			if(data) {
+				var ret = JSON.parse(data);
+				if (ret.code != 1000) {
+					api.toast({"msg":ret.message});
+					return;
+				} 	
+				if(ret.data == null || ret.data.status != 1) {
+					//$("#isInvoiceDIV").hide();
+					return;
+				}
+				isInvoicePower = true;
+			}
+		});
+	}	
+
+	//初始化联系人、联系电话
+	function initRecContractAndPhone() {
+		$.ajax({ url: serverUrl+"bi/QueryMainAction/getDeptContact/" + deptId,
+				 headers: {
+					       session_id:guid(),from:"rest",			               
+					      },
+			  	 method:"POST",
+				 contentType : 'application/json'
+		}).success(function(data){	
+			if(data) {
+				var ret = JSON.parse(data);
+				if (ret.code != 1000) {
+					api.toast({"msg":ret.message});
+					return;
+				} 
+				if(ret.data == null) {
+					return;
+				}
+				
+				$("#recContract").val(ret.data.contactor);
+				$("#recPhone").val(ret.data.telphone);
+			}
+		});
+	}
+	
+	//选择品牌
+	function doSearchBrand() {
+		api.openWin({
+		    name: "brandChoosePage",
+		    url: "./brandChoose.html"
+		});	
+	}
+	
+	//选中品牌后设置到品牌信息中
+	function selectBrand(brandName, logo, brandId_) {
+		$("#brandNameImg").attr("src", logo);
+		$("#brandName").html(brandName);
+		selectBrandId = brandId_;
+		
+		if($("#selectDeptNames").val() != "") {
+			selectSupplyIds = "";
+			isInvoice = "";
+			var html = $("#selectDeptNamesA").html();
+			$("#selectDeptNamesA").html(html.replace($("#selectDeptNames").val(), "最多可选择3家供应商发起询价"));
+			$("#selectDeptNames").val("");
+		}
+	}
+	
+	//供应商选择
+	function doSearchSupply() {
+		if($("#brandName").html() == "") {
+			api.toast({"msg":"请先选择品牌再选择供应商！"});
+			return;
+		}
+		api.openWin({
+		    name: "supplyChoosePage",
+		    url: "./supplyChoose.html",
+		    pageParam: {
+		    	isInvoicePower: isInvoicePower,
+		    	brandId: selectBrandId
+		    }
+		});	
+	}
+	
+	//选中供应商后设置到供应商中
+	function selectSupply(supplierIds, supplierNames, tmpIsInvoice) {
+		$("#selectDeptNames").val(supplierNames);
+		selectSupplyIds = supplierIds;
+		isInvoice = tmpIsInvoice;
+		var html = $("#selectDeptNamesA").html();
+		$("#selectDeptNamesA").html(html.replace("最多可选择3家供应商发起询价", supplierNames));
+	}
+
+	//设置车型
+	function selectCarModel(modelName) {
+		$("#carModel").val(modelName);
+	}
+</script>
+</html>
