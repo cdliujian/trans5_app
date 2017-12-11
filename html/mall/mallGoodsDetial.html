@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<title>购物车</title>
+</head>
+<body class="bg-f4f4f4">
+<div class="mbottom49">
+	<a class="sc-back" onclick="closeWin();"></a>
+	<div class="bg-white ptop10">
+		<div id="slider" class="mui-slider sc-slider" >
+			<div class="mui-slider-group mui-slider-loop" id="goodsGallery">
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<a>
+						<img src="images/mall/goodsDefault.jpg">
+					</a>
+				</div>
+			</div>
+		</div>
+		<!--<div class="am-slider am-slider-default sc-slider mbottom0" data-am-flexslider id="demo-slider-0">
+			<ul class="am-slides">
+				<li><img src="../images/ypcg/p3.png" height="326"> </li>
+			</ul>
+		</div>-->
+	</div>
+
+	<div class="bg-white mbottom10" id="mallGoodsDetial">
+	</div>
+
+	<div class="bg-white mbottom10">
+		<div class="border-bottom-f4 p10">
+			商品参数
+		</div>
+		<div class="sc-d t13 p10" id="goodsParam">
+		</div>
+	</div>
+</div>
+<div class="sc-footer bg-white t13 mui-text-center sc-footer-list">
+	<a href="###" class="mui-col-xs-3 fl c333 ptop6 border-right" style="height: 49px;">
+		<img src="images/mall/sy-btn-icon.png" width="20" height="19"><br>
+		<span>收藏</span>
+	</a>
+	<a class="mui-col-xs-3 fl c333 ptop6" href="###">
+		<img src="images/mall/shopping-cart.png" width="20" height="19"><br>
+		<span>购物车</span>
+	</a>
+	<a class="mui-col-xs-3 fl t14 sc-jrgwc-btn" onclick="MallGoodsCar()">
+		加入购物车
+	</a>
+	<a class="mui-col-xs-3 fl t14 sc-ljgm-btn" href="###">
+		立即购买
+	</a>
+</div>
+
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/amazeui.min.js"></script>
+<script type="text/javascript" src="script/amazeui-message-pop.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script id="mallImagesContent" type="text/html">
+ {{each data as value i}}
+   <div class="mui-slider-item mui-slider-item-duplicate">
+     <a>
+       <img src="{{value.imageUrl}}">
+     </a>
+   </div>
+ {{/each}}
+</script>
+
+<script id="mallDetialContent" type="text/html">
+  <div class="border-bottom-f4 pleft10 pright10">
+    <div class="price t13 fl t15">￥<span class="t20">{{sellprice}}</span> </div>
+    <span class="fr c999 t13 ptop10">{{deptName}}</span>
+    <div class="clear"></div>
+  </div>
+  <div class="p10 border-bottom-f4">
+    <div class="c333">
+      <h5 class="fw-nomal t13 am-margin-bottom-sm c333">{{title}}</h5>
+      {{if isall  == 1 }}
+        <div class="sc-con-left">
+        <span class="am-block t12 c666">须按件购买：{{allamount}}/件</span>
+      </div>
+      <div class="mui-numbox sc-con-jj" data-numbox-min='{{allamount}}' data-numbox-step='{{allamount}}' id="allamountDiv">
+        <button class="mui-btn mui-btn-numbox-minus sc-jian2" type="button"></button>
+        <input class="mui-input-numbox sc-jjinput2" type="number" id="goodsCount" value="{{allamount}}"/>
+        <button class="mui-btn mui-btn-numbox-plus sc-jia2" type="button"></button>
+      </div>
+      {{else}}
+      <div class="mui-numbox sc-con-jj" data-numbox-min='1' data-numbox-step='1' id="allamountDiv">
+        <button class="mui-btn mui-btn-numbox-minus sc-jian2" type="button"></button>
+        <input class="mui-input-numbox sc-jjinput2" type="number" value="1" id="goodsCount"/>
+        <button class="mui-btn mui-btn-numbox-plus sc-jia2" type="button"></button>
+      </div>
+      {{/if}}
+
+    </div>
+    <div class="clear"></div>
+  </div>
+</script>
+<script type="text/javascript">
+mui.init();
+//添加购物车
+function MallGoodsCar(){
+  var detail = {};
+  detail.goodsId = goodsData.id;
+  detail.price = goodsData.sellprice;
+  detail.amount = $("#goodsCount").val();
+  detail.totalPrice = goodsData.sellprice*$("#goodsCount").val();
+  detail.supplyId = goodsData.deptId;
+  detail.supplyName = goodsData.deptName;
+  ajax("bi/MallGoodsAction/addToCart",JSON.stringify(detail), null, null, function(data){
+    if(data.code == 1000){
+      api.toast({msg: '添加成功'})
+    }else{
+      api.toast({msg: '添加失败'})
+    }
+  })
+}
+
+
+mui.plusReady(function () {
+});
+goodsData = null;
+apiready = function(){
+  var goodsId = api.pageParam.goodsId;
+  getGoodsDetial(goodsId);
+}
+//获取商品信息
+function getGoodsDetial(goodsId){
+  queryGoodsImages(goodsId)
+  queryMallGoodsDetial(goodsId)
+}
+//获取商品图片
+function queryGoodsImages(goodsId){
+  ajax("bi/Mall/queryGoodsImages",{"goodsId":goodsId}, null, null, function(data){
+    if(isEmpty(data.data)){//该商品无图片 给默认图片
+
+    }else{//该商品有图片 轮播图片
+      var html = template('mallImagesContent', data);
+      $("#goodsGallery").html(html);
+    }
+  })
+}
+
+function queryMallGoodsDetial(goodsId){
+    ajax("bi/Mall/queryMallGoodsDetial",{"id":goodsId}, null, null, function(data){
+      goodsData = data.data;
+      if(data.data != null){
+        data.data.sellprice = parseFloat(data.data.sellprice).toFixed(2)
+        var html = template('mallDetialContent', data.data);
+        $("#mallGoodsDetial").html(html);
+        mui("#allamountDiv").numbox()
+
+        $("#goodsParam").append('<span class="sc-d-l">品牌</span><div class="sc-d-r">'+data.data.brandName+'</div>');
+        $("#goodsParam").append('<span class="sc-d-l">型号</span><div class="sc-d-r">'+data.data.modelName+'</div>');
+        queryMallGoodsParam(goodsId)
+      }
+    })
+}
+
+function queryMallGoodsParam(goodsId){
+    ajax("bi/Mall/queryMallGoodsParam",{"goodsId":goodsId}, null, null, function(data){
+        $.each(data.data,function(i,c){
+          $("#goodsParam").append('<span class="sc-d-l">'+c.parameterName+'</span><div class="sc-d-r">'+c.parameterValue+'</div>');
+        })
+        $("#goodsParam").append('<div class="clear"></div>');
+    })
+}
+function isEmpty(value) {
+  return (Array.isArray(value) && value.length === 0) || (Object.prototype.isPrototypeOf(value) && Object.keys(value).length === 0);
+}
+//返回上一页
+function closeWin(){
+  api.closeWin();
+
+}
+</script>
+</body>
+</html>
