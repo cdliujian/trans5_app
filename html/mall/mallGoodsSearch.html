@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<title>搜索</title>
+</head>
+<body class="bg-thingray t13">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<div class="mui-title search-title pright10">
+		<div class="mui-input-row mui-search sc-search sc-search-bg">
+			<input type="search" id="searchText" class="mui-input-clear" placeholder="输入货品分类、名称或商家">
+		</div>
+	</div>
+	<button class="mui-pull-right mui-btn-link c333 t14" id="confirmBtn" onclick="querySearch()">查询</button>
+</header>
+<div class="mui-content">
+	<div class="search-con-title p10">
+		<span class="search-icon1">历史搜索</span>
+	</div>
+	<div class="bg-white p10 search-list" id="historyRecord">
+
+	</div>
+
+	<!-- <div class="search-con-title p10">
+		<span class="search-icon2">热门搜索</span>
+	</div>
+	<div class="bg-white p10 search-list">
+		<a href="###">美孚</a>
+		<a href="###">汽机油</a>
+		<a href="###">火花塞</a>
+		<a href="###">青牛用品</a>
+		<a href="###">青牛用品</a>
+		<a href="###">青牛用品</a>
+	</div>
+
+	<div class="search-con-title p10">
+		<span class="search-icon3">我的收藏-商家</span>
+	</div>
+	<div class="bg-white p10 search-list">
+		<a href="###">美孚</a>
+		<a href="###">汽机油</a>
+		<a href="###">火花塞</a>
+		<a href="###">青牛用品</a>
+		<a href="###">青牛用品</a>
+		<a href="###">青牛用品</a>
+	</div>
+
+	<div class="search-con-title p10">
+		<span class="search-icon3">我的收藏-货品</span>
+	</div>
+	<div class="mbottom10">
+		<div class="mui-col-xs-6 p0 mbottom6 fl">
+			<div class="bg-white sc-list">
+				<div class="sc-list-img">
+					<img src="../images/ypcg/p2.png" width="88">
+				</div>
+				<div class="c333">
+					<h5 class="fw-nomal t13 mbottom6 sc-truncate">美孚力霸机油15W-40 4L SL</h5>
+					<div class="sclist-p">
+						<div class="price t13 sc-truncate" style="width: 100%;">
+							￥<span class="t15">8100.00</span>
+							<span class="t12 c666 bg-f4f4f4 sclist-j">须按件购买：12/件</span>
+						</div>
+					</div>
+					<span class="t13 c999 sc-truncate mui-block ptop6">青牛用品(中南)</span>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="mui-col-xs-6 p0 mbottom6 fl">
+			<div class="bg-white sc-list">
+				<div class="sc-list-img">
+					<img src="../images/ypcg/p2.png" width="88">
+				</div>
+				<div class="c333">
+					<h5 class="fw-nomal t13 mbottom6 sc-truncate">美孚力霸机油15W-40 4L SL</h5>
+					<div class="sclist-p">
+						<div class="price t13 sc-truncate" style="width: 100%;">
+							￥<span class="t15">8100.00</span>
+							<span class="t12 c666 bg-f4f4f4 sclist-j">须按件购买：12/件</span>
+						</div>
+					</div>
+					<span class="t13 c999 sc-truncate mui-block ptop6">青牛用品(中南)</span>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div> -->
+
+</div>
+
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+
+searchTextList = "";
+userId = "";
+apiready = function(){
+  userId = $api.getStorage("userinfo").userId;
+  initHistoryRecord();
+}
+//初始化搜索历史记录
+function initHistoryRecord(){
+  searchTextList = $api.getStorage(userId);
+  if(typeof(searchTextList) != "undefined" && searchTextList.length != 0){
+      searchTextList.reverse();
+      $("#historyRecord").html("")
+      for(var i = 0;i < searchTextList.length; i++) {
+        $("#historyRecord").append('<a onclick=querySearchGoods("'+searchTextList[i]+'")>'+searchTextList[i]+'</a>');
+      }
+      $("#historyRecord").append('<a class="search-trash" onclick=clearSearchHistory()><span>清空历史记录</span></a>');
+  }
+}
+
+//点击查询
+function querySearch(){
+  querySearchGoods($("#searchText").val())
+}
+//跳转到商品页面
+function querySearchGoods(searchText){
+  if(searchText != ""){
+    if(typeof(searchTextList) == "undefined"){
+      var searchTextLists = new Array();
+      searchTextLists.push(searchText);
+      $api.setStorage(userId, searchTextLists);
+    }else{
+      if(jQuery.inArray(searchText,searchTextList) == -1){
+        if(searchTextList.length == 10){
+            searchTextList.splice(0, 1);
+            searchTextList.push(searchText);
+            $api.setStorage(userId, searchTextList);
+        }else{
+            searchTextList.push(searchText);
+            $api.setStorage(userId, searchTextList);
+        }
+      }else{
+        searchTextList.splice(jQuery.inArray(searchText,searchTextList), 1)
+        searchTextList.push(searchText);
+        $api.setStorage(userId, searchTextList);
+      }
+    }
+  }
+
+  api.openWin({
+      name: '商品列表',
+      url: '../../html/mall/mallGoodsList.html',
+      pageParam: {
+          "searchText": searchText
+      },
+      reload : true
+  });
+}
+//清空历史记录
+function clearSearchHistory(){
+  searchTextList.splice(0, searchTextList.length);
+  $api.setStorage(userId, searchTextList);
+  $("#historyRecord").empty();
+  //$("#historyRecord").html("");
+}
+</script>
+</body>
+</html>

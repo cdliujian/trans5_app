@@ -41,3 +41,4 @@
 /A6058345419715/images/ypcg/p4.png
 /A6058345419715/css/public.css
 /A6058345419715/image/loading_more.gif
+/A6058345419715/css/app.css

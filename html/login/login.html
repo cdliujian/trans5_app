@@ -126,7 +126,13 @@
 <script type="text/javascript" src="script/common.js"></script>
 <script type="text/javascript">
 apiready=function(){
-
+   /*
+   api.addEventListener({
+    name:'viewappear'
+}, function(ret, err){        
+   alert('window显示');
+});
+*/
    api.addEventListener({
 		    name: 'keyback'
 		}, function(ret, err) {
@@ -137,34 +143,95 @@ apiready=function(){
 		});
 
 
-   $("#login").click(function(){
-        if($('#username').val() == null || $('#username').val() == ''){
-				error_msg("请输入账号",function(){
+   		$("#login").click(function(){
+        	if($('#username').val() == null || $('#username').val() == ''){
+        	    api.toast({"msg":"请输入账号"});
+				
 				   $($('#username').val()).focus();
-				})
+				
 	    		
 	    		return false;
 	   		}else if ($('#password').val() == null || $('#password').val() == '') {
-				error_msg("请输入密码",function(){
-				   $($('#password').val()).focus();
-				})
+	   		    api.toast({"msg":"请输入密码"});
+				$($('#password').val()).focus();
+				
 	    		
 	    		return false;
 			} else{
+			
 				var param = {
-				              "method":"post",
-				              "data" : {values:{"username_":$('#username').val(),"password_":$('#password').val()}}
+				               
+				               "encode":false,
+				              "headers":{"from":"rest","Content-Type":"application/x-www-form-urlencoded"},
+				              "dataType": "text",
+				              "data" : {"values":{"username_":$('#username').val(),"password_":$('#password').val()}}
 				            }
-				var url = "security_check_"            
-			    ajax(url,param,null,null,function(ret){
-			       if(ret.code=="1000"){
-			          var fcr = ret.data.fcr;
-			          $api.setStorage("userinfo",{"username":$('#username').val(),"fcr":fcr});
+				var url = "security_check_";
+				ajax(url,param,null,null,function(ret){
+				   console.log(ret);
+				   if( ret.retCode=="1"){
+			          
+			          var fcr = ret.fcr;
+			          console.log(JSON.stringify(ret));
+			          $api.setStorage("userinfo",{"userId":ret.loginUser.id,
+			                                      "username":$('#username').val(),
+			                                      "deptId":ret.loginDept.id,
+			                                      "deptName":ret.loginDept.name,
+			                                      
+			                                      "fcr":fcr});
+			          var pageParam = {};                            
+			          pageParam.orderNo = "0017121200004";
+			          pageParam.busType="5";
+			          pageParam.serviceParam = JSON.stringify([{"id":10920,"amount":30,"billNo":"0017121200004","feeInfo":0}]);
+				      //api.openWin({name: "queryMainPage", url: "../pay/queren-pay.html",pageParam:pageParam});
+				      api.openWin({name: "root", url: "../../index.html"});     
+			          param = {"goodName":"机油"} 
+				           
+			       }else{
+			          api.alert({msg:JSON.stringify(data)});
 			       }
-			    });
+				});
+				
+				/*
+				$.ajax({ url: serverUrl+"security_check_",
+			             headers: {
+			               			session_id:guid(),from:"rest",
+			               
+			             },
+			             method:"POST",
+			             data:{"username_": $('#username').val(), "password_": $('#password').val()}
+			  
+			  
+			  	}).success(function(data){		
+			       var ret = JSON.parse(data);
+			       
+			       if(ret.code = 1000 && ret.data.retCode=="1"){
+			          
+			          var fcr = ret.data.fcr;
+			          console.log(JSON.stringify(ret.data));
+			          $api.setStorage("userinfo",{"userId":ret.data.loginUser.id,
+			                                      "username":$('#username').val(),
+			                                      "deptId":ret.data.loginDept.id,
+			                                      "deptName":ret.data.loginDept.name,
+			                                      
+			                                      "fcr":fcr});
+			          var pageParam = {};                            
+			          pageParam.orderNo = "0017121200004";
+			          pageParam.busType="22";
+			          pageParam.serviceParam = JSON.stringify([{"id":10920,"amount":30,"billNo":"0017121200004","feeInfo":0}]);
+				      api.openWin({name: "queryMainPage", url: "../pay/queren-pay.html",pageParam:pageParam});     
+			          param = {"goodName":"机油"} 
+				           
+			       }else{
+			          api.alert({msg:JSON.stringify(data)});
+			       }
+			  
+			  	});
+				          
+			    */
 			}
    
-   });
+   		});
    
 
 }

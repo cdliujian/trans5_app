@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<style type="text/css">
+		#list {
+			/*避免导航边框和列表背景边框重叠，看起来像两条边框似得；*/
+			margin-top: -1px;
+		}
+	</style>
+	<title>购物车</title>
+</head>
+<body class="bg-f8f8f8">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" id="closeWin"></a>
+	<h1 class="mui-title">购物车</h1>
+	<button class=" mui-pull-right mui-btn-link c333 t14" id="confirmBtn">清空</button>
+</header>
+
+<!--<header class="am-header am-header-fixed am-text-center bg-f8f8f8 mheader">
+	<a class="am-fl" href="###"><img src="../images/arrow-left2.png" width="13"> </a>
+	<span class="t20 c333">购物车</span>
+	<a href="###" class="am-header-right am-header-nav am-text-right am-fr c333 am-text-sm mtop3" data-am-modal="{target: '#doc-modal-1' }">清空</a>
+</header>-->
+<div class="mui-content pbottom49" style="display: none;"><div class="loading"><span class="mui-spinner"></span></div></div>
+<div class="mui-content c333 pbottom49" id="shoppingCartListId">
+  <div class="mui-content bg-white">
+  	<div class="mbottom10 p10 pbottom0 mui-text-center bg-white" style="position: fixed;top:0px;left: 0;padding-top:149px;padding-bottom:49px;width: 100%;height: 100%">
+  		<img src="images/mall/spc-icon.png" width="109">
+  		<div class="p10 mtop10">您的购物车是空的</div>
+  	</div>
+  </div>
+</div>
+
+<div class="sc-footer bg-white mui-bar-footer">
+	<div class="price fl ptop10 mtop3 pleft10"><span class="t13 c333"> 合计</span>  ￥<span class="t16" id="shoppingCartPrice">0.00</span> </div>
+	<div class="fr">
+		<span class="c999 pright10 fl t13 sc-ftext" id="shoppingCartCount">共0件商品</span>
+    <button type="button" class="mui-btn sc-qjs-btn t15" data-loading-text="提交中" id="cartSettlement">去结算</button>
+	</div>
+</div>
+
+<!-- <div class="sc-footer bg-white mui-bar-footer">
+	<div class="price fl ptop10 mtop3 pleft10"><span class="t13 c333"> 合计</span>  ￥<span class="t16" id="shoppingCartPrice">0.00</span> </div>
+	<div class="fr">
+		<span class="c999 pright10 t13" id="shoppingCartCount">共0件商品</span>
+    <button type="button" class="mui-btn sc-qjs-btn t15" data-loading-text="提交中" id="cartSettlement">去结算</button>
+	</div>
+</div> -->
+<!--<div class="mui-popup mui-popup-in tips-modal" tabindex="-1" id="doc-modal-1">
+	<div class="mui-popup-inner">
+			<div class="am-text-sm bg-white am-text-center pbottom10">
+				<div class="sc-tipss">
+					确定删除商品？
+				</div>
+				<div class="mui-text-right">
+					<a class="mright10" href="###">取消</a>
+					<a class="" href="###" data-am-modal-close>确定</a>
+				</div>
+		</div>
+	</div>
+</div>-->
+<div id="info"></div>
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/amazeui.min.js"></script>
+<script type="text/javascript" src="script/amazeui-message-pop.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+
+<script id="shoppingCartContent" type="text/html">
+ {{each list as value i}}
+ <div class="bg-white mbottom10">
+  <div class="border-bottom-f4 fw-nomal t15 p10" style="padding-top:15px; padding-bottom: 15px;">{{value.supplyName}}</div>
+  {{each value.details as detail j}}
+     <div class="border-bottom-f4 p10 pbottom0">
+      <div class="sc-left">
+        {{if detail.good.goodsMainPic != ""}}
+          <img src="{{detail.good.goodsMainPic}}" width="55">
+        {{else}}
+          <img src="images/mall/goodsDefault.jpg" width="55">
+        {{/if}}
+      </div>
+      <div class="c333 sc-con">
+        <div class="fw-nomal t14">{{detail.good.title}}</div>
+
+          {{if detail.good.isall  == 1 }}
+            <div class="sc-con-left ptop6">
+              <span class="am-block c666 t12">须按件购买：{{detail.good.allamount}}/件</span>
+              <div class="price">￥<span class="t15">{{detail.good.sellprice}}</span> </div>
+            </div>
+            <div class="mui-numbox sc-con-jj fr allamountDiv" data-numbox-min='{{detail.good.allamount}}' data-numbox-step='{{detail.good.allamount}}'>
+              <button class="mui-btn mui-btn-numbox-minus sc-jian2" type="button"></button>
+              <input class="mui-input-numbox sc-jjinput2 goodsNumber" title="{{value.supplyId}}" type="number" onchange="cartCountChange(this,{{value.supplyId}},{{detail.good.sellprice}});" id="{{detail.good.id}}" value="{{detail.amount}}" name="{{detail.good.sellprice}}"/>
+              <button class="mui-btn mui-btn-numbox-plus sc-jia2" type="button"></button>
+            </div>
+          {{else}}
+            <div class="sc-con-left ptop6">
+              <div class="price">￥<span class="t15">{{detail.good.sellprice}}</span> </div>
+            </div>
+            <div class="mui-numbox sc-con-jj fr allamountDiv" data-numbox-min='1' data-numbox-step='1'>
+              <button class="mui-btn mui-btn-numbox-minus sc-jian2" type="button"></button>
+              <input class="mui-input-numbox sc-jjinput2 goodsNumber" title="{{value.supplyId}}" type="number" onchange="cartCountChange(this,{{value.supplyId}},{{detail.good.sellprice}});" id="{{detail.good.id}}"  value="{{detail.amount}}" name="{{detail.good.sellprice}}"/>
+              <button class="mui-btn mui-btn-numbox-plus sc-jia2" type="button"></button>
+            </div>
+          {{/if}}
+      </div>
+      <div class="clear"></div>
+    </div>
+   {{/each}}
+  <div class="sc-liuyan t13 border-bottom-f4 pleft10 pright10">
+    <span>买家留言</span><input class="mui-input-row t13 mbottom0" type="text" id="{{value.supplyId}}"  placeholder="给卖家的留言（可不填）">
+  </div>
+  <div class="t13 p10 mui-text-right" id="{{value.supplyId}}amount">共{{value.amount}}件商品 合计<span class="price">￥{{value.totalmoney}}</span> </div>
+  <div class="clear"></div>
+</div>
+ {{/each}}
+</script>
+
+<script id="emptyCartContent" type="text/html">
+<div class="mui-content bg-white">
+  <div class="mbottom10 p10 pbottom0 mui-text-center bg-white" style="position: fixed;top:0px;left: 0;padding-top:149px;padding-bottom:49px;width: 100%;height: 100%">
+    <img src="images/mall/spc-icon.png" width="109">
+    <div class="p10 mtop10">您的购物车是空的</div>
+  </div>
+</div>
+</script>
+
+<script type="text/javascript">
+apiready = function(){
+  queryShoppingCart();
+}
+
+var cartInfoList = '';
+
+function queryShoppingCart(){
+  ajax("bi/MallGoodsAction/queryShoppingCart",{}, null, null, function(data){
+    if(isEmpty(data) || isEmpty(data.list)){
+
+    }else{
+        $("#shoppingCartPrice").html(parseFloat(data.total).toFixed(2))
+        $("#shoppingCartCount").html("共"+data.amount+"件商品");
+        cartInfoList = data.list;
+        $.each(data.list,function(i,c){
+          c.totalmoney = parseFloat(c.totalmoney).toFixed(2)
+          $.each(c.details,function(i,o){
+            if(o.good.goodsMainPic == null){
+              o.good.goodsMainPic = "";
+            }
+            o.good.sellprice = parseFloat(o.good.sellprice).toFixed(2)
+            o.totalPrice = parseFloat(o.totalPrice).toFixed(2)
+            if(o.good.goodsMainPic != ""){
+                o.good.goodsMainPic = (o.good.goodsMainPic + "?x-oss-process=image/resize,m_pad,h_64");
+            }
+          })
+        })
+        var html = template('shoppingCartContent', data);
+        $("#shoppingCartListId").html(html);
+        mui(".allamountDiv").numbox();
+    }
+  })
+}
+
+function cartCountChange(obj,supplyId,goodsPrice){
+  // var count = obj.value;
+  // var totalPrice = count * goodsPrice;
+  // $("#"+goodsId+"amount").html('共'+count+'件商品 合计<span class="price">￥'+parseFloat(totalPrice).toFixed(2)+'</span>');
+  var count =0;
+  var totalPrice = 0.00;
+  var totalcount = 0;
+  var goodsMoney = 0.00;
+  $(".goodsNumber").each(function(){
+    if(this.title == supplyId){
+      totalPrice += (this.value*this.name)
+      count = parseInt(count) + parseInt(this.value)
+    }
+    goodsMoney += (this.value*this.name)
+    totalcount = parseInt(totalcount) + parseInt(this.value)
+  })
+  $("#"+supplyId+"amount").html('共'+count+'件商品 合计<span class="price">￥'+parseFloat(totalPrice).toFixed(2)+'</span>');
+  $("#shoppingCartPrice").html(parseFloat(goodsMoney).toFixed(2))
+  $("#shoppingCartCount").html("共"+totalcount+"件商品");
+
+}
+
+mui.init();
+
+//返回上一页
+document.getElementById("closeWin").addEventListener('tap', function() {
+  api.closeWin();
+})
+
+$("#cartSettlement").click(function(){
+  if(cartInfoList != ""){
+    mui("#cartSettlement").button('loading');
+    setTimeout(function() {
+        mui("#cartSettlement").button('reset');
+    }.bind("#cartSettlement"), 5000);
+    getReceiveInfo();
+  }else{
+      api.toast({msg: '请先添加商品到换物车'})
+  }
+})
+
+function getReceiveInfo(){
+  ajax("bi/MallGoodsAction/queryReceiveInfo",{}, null, null, function(data){
+    toPay(data);
+  })
+}
+
+function toPay(receiveInfoData){
+  var main = [];
+  var ChainOrderMain;
+  var receiveInfo;
+  var goodsName = "";
+  var supplyName = "";
+  var goodsTotalmoney = 0.00;
+  $.each(cartInfoList,function(i,c){
+      var details = c.details;
+      var cartMain = c;
+      receiveInfo = receiveInfoData;
+      supplyName = cartMain.supplyName;//供应商名称
+      ChainOrderMain = new Object();
+      //订单主表增加的发票信息
+      ChainOrderMain.goodsMoney = 0;    //货品总金额
+      ChainOrderMain.isInvoice = 0;     //是否需要发票
+      ChainOrderMain.invoiceRate = 0;   //发票服务费率
+      ChainOrderMain.invoiceMoney = 0;  //发票服务费金额
+      ChainOrderMain.supplyId = cartMain.supplyId;//供应商ID
+      ChainOrderMain.memo = $("#"+cartMain.supplyId).val();//备注
+      ChainOrderMain.receiveInfo = receiveInfo;
+      var children = [];
+      var totalmoney = 0.00;
+      details.forEach(function(detail,j){
+        var ChainOrderChild = new Object();  //采购订单货品表,字段要和对应的POJO对象一样
+        ChainOrderChild.goodsName = detail.good.title;
+        $(".goodsNumber").each(function(){
+          if(this.id == detail.good.id){
+            ChainOrderChild.num = this.value;
+            ChainOrderChild.uintPrice = detail.price;
+            ChainOrderChild.sumPrice = this.value * detail.price;
+            totalmoney += Number(this.value * detail.price);
+            goodsTotalmoney += Number(this.value * detail.price);
+          }
+        })
+        children.push(ChainOrderChild);
+        if(goodsName)
+    			goodsName += "," + detail.good.title;
+    		else
+    			goodsName = detail.good.title;
+      })
+      ChainOrderMain.goodsMoney = totalmoney;
+      ChainOrderMain.amount =  Number(ChainOrderMain.invoiceMoney) + Number(ChainOrderMain.goodsMoney);
+      ChainOrderMain.children = children
+      main.push(ChainOrderMain);
+  })
+  goodsName =  goodsName.substr(0,20);
+  ajax("bi/ChainOrderMainAction/doPay",JSON.stringify(main), null, null, function(data){
+    if(isEmpty(data)){
+			return;
+		}
+    var paralist = [];
+		var orderNo = "";
+		var orderAmount = 0;
+		$.each(data,function(i,item){
+			var o = {};
+			o.id = item.id;
+			o.amount = item.amount;
+			o.billNo = item.billNo;
+			o.suppName = supplyName;
+			orderAmount += o.amount;
+			if(!orderNo)
+				orderNo = item.billNo;
+			paralist.push(o);
+		});
+		api.openWin({
+		    name: 'page1',
+		    url: '../../html/pay/queren-pay.html',
+		    pageParam: {
+          "orderAmount": goodsTotalmoney,
+          "orderNo" : orderNo,
+          "busType" : "5",
+          "suppName": supplyName,
+          "goodsName": goodsName,
+          "serviceName" : "Chain.ChainOrderMainService"+escape("#")+"savePayBack",
+          "serviceParam" : JSON.stringify(paralist)
+		    }
+		});
+
+  })
+}
+
+mui.init({
+	swipeBack: true //启用右滑关闭功能
+});
+var info = document.getElementById("info");
+document.getElementById("confirmBtn").addEventListener('tap', function() {
+	var btnArray = ['否', '是'];
+  if(cartInfoList == ""){
+    api.toast({msg: '暂无购物车信息'})
+    return;
+  }
+	mui.confirm('确定删除商品？', function(e) {
+		if (e.index == 1) {
+			//info.innerText = '删除商品';
+        clearCart();
+		} else {
+			//info.innerText = '取消删除商品'
+		}
+	})
+});
+
+function clearCart(){
+    ajax("bi/MallGoodsAction/clearCart",JSON.stringify(0), null, null, function(data){
+      if(isEmpty(data)){
+        api.toast({msg: '清空购物车失败'})
+      }else{
+        cartInfoList = "";
+        $("#shoppingCartPrice").html(parseFloat(0).toFixed(2))
+        $("#shoppingCartCount").html("共0件商品");
+        var html = template('emptyCartContent', null);
+        $("#shoppingCartListId").html(html);
+      }
+    })
+}
+
+</script>
+</body>
+</html>

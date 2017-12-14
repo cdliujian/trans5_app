@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+    <style>
+		.mui-control-content {
+			background-color: white;
+			min-height: 215px;
+		}
+		.mui-control-content .mui-loading {
+			/**margin-top: 50px;*/
+			margin-top: -1px;
+		}
+	</style>
+</head>
+<body class="bg-f8f8f8 t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-icon mui-icon-left-nav c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		我的询价单
+	</div>
+</header>
+<div class="mui-content">
+	<div id="slider" class="mui-slider bill-slider mycgd-slider">
+		<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted bg-white">
+			<a class="mui-control-item mui-active" href="#pjList">
+				全部
+			</a>
+			<a class="mui-control-item" href="#pjList1">
+				未报价
+			</a>
+			<a class="mui-control-item" href="#pjList2">
+				已报价
+			</a>
+			<a class="mui-control-item" href="#pjList3">
+				已采购
+			</a>
+			<a class="mui-control-item" href="#pjList4">
+				已取消
+			</a>
+		</div>
+		<div id="sliderProgressBar" class="mui-slider-progress-bar" style="width: 20%;"></div>
+		<div class="mui-slider-group mtop10">
+			<div id="pjList" class="mui-slider-item mui-control-content bg-f8f8f8 mui-active">
+				<div id="scroll1" class="mui-scroll-wrapper">
+					<div class="mui-scroll t13 pbottom49" id="pjListDIV">
+						
+					</div>
+					<!--<a class="mui-block mui-text-center am-btn-link myxjd-more" href="###">点击查看更多</a>-->
+				</div>
+				
+			</div>
+			<div id="pjList1" class="mui-slider-item mui-control-content bg-f8f8f8">
+				<div id="scroll2" class="mui-scroll-wrapper">
+					<div class="mui-scroll t13 pbottom49" id="pjList1DIV">
+						<!--<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>-->
+
+					</div>
+				</div>
+
+			</div>
+			<div id="pjList2" class="mui-slider-item mui-control-content bg-f8f8f8">
+				<div id="scroll3" class="mui-scroll-wrapper">
+					<div class="mui-scroll t13 pbottom49" id="pjList2DIV">
+						<!--<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>-->
+
+					</div>
+				</div>
+
+			</div>
+			<div id="pjList3" class="mui-slider-item mui-control-content bg-f8f8f8">
+				<div id="scroll4" class="mui-scroll-wrapper">
+					<div class="mui-scroll t13 pbottom49" id="pjList3DIV">
+						<!--<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>-->
+
+					</div>
+				</div>
+
+			</div>
+			<div id="pjList4" class="mui-slider-item mui-control-content bg-f8f8f8">
+				<div id="scroll5" class="mui-scroll-wrapper">
+					<div class="mui-scroll t13 pbottom49" id="pjList4DIV">
+						<!--<div class="mui-loading">
+							<div class="mui-spinner">
+							</div>
+						</div>-->
+
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script id="tplMainTable" type="text/html">
+{{each mains as main i}} 
+						<div class="bg-white mbottom10">
+							<div class="border-bottom p10">
+								<div class="fl">
+									{{main.brandName}}
+								</div>
+								<span class="orange fr">
+								{{if main.status == 0}}待报价{{/if}}{{if main.status == 1}}已报价{{/if}}{{if main.status == 2}}已采购{{/if}}{{if main.status == 99}}已中止{{/if}}{{if main.status == 1}}<span class="index-listli-tips" style="margin-left: 5px;">{{main.quoteNum == null ? 0 : main.quoteNum}}</span>{{/if}}
+								</span>
+								<div class="clear"></div>
+							</div>
+							<div class="t13 p10 border-bottom">
+								<div class="mui-block c666">车型<span class="fr">{{main.carModel}}</span></div>
+								<div class="mui-block c666">询价时间<span class="fr">{{timeStamp2String(main.returnTime)}}</span></div>
+								<div class="mui-block c666">报价时间<span class="fr">{{main.quoteTime==null?"":timeStamp2String(main.quoteTime)}}</span></div>
+								<div class="mui-block c666">询价机构<span class="fr">{{main.dept.name}}</span></div>
+							</div>
+
+							<div class="p10 mui-text-right cgd-btn">
+								{{if main.status == 0 || main.status == 1}}<a class="mui-btn btn-gray-o t13" href="javascript: doCancel('{{main.id}}');" id="cancel_{{main.id}}">取消</a>{{/if}}
+								<a class="mui-btn btn-orange-o t13" href="javascript: doOpenView('{{main.id}}');">查看详情</a>								
+								{{if main.status == 2 || main.status == 1}}<a class="mui-btn btn-orange-o t13" href="javascript: doOpenQuote('{{main.id}}');">查看报价</a>{{/if}}
+							</div>
+						</div>
+{{/each}}
+</script>
+
+</body>
+<script type="text/javascript" src="script/mui.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script>
+	var map = {};
+	var type = "pjList";
+	//获取每页显示记录数
+	var iDisplayLength = 0;
+	
+	var djType = {};
+	var djScroll = {};
+	
+	var status = "";
+	
+	var lastDate = "";
+	var flag = true;
+		map["0"] = "待报价";
+		map["1"] = "已报价";
+		map["2"] = "已采购";
+		map["99"] = "已中止";
+		
+		djType["pjList"] = 0;
+		djType["pjList1"] = 0;
+		djType["pjList2"] = 0;
+		djType["pjList3"] = 0;
+		djType["pjList4"] = 0;
+		
+		djScroll["pjList"] = "#scroll1";
+		djScroll["pjList1"] = "#scroll2";
+		djScroll["pjList2"] = "#scroll3";
+		djScroll["pjList3"] = "#scroll4";
+		djScroll["pjList4"] = "#scroll5";
+		
+	
+	function close() {
+		api.closeWin({name: "queryMainListPage"});
+	}
+	
+	var pullToRefresh;
+	var selector = document.querySelector(".mui-scroll-wrapper");
+		
+	mui.ready(function(){
+		//获取浏览器当前窗口可视区域高度
+		var height = $(window).height() - 46;
+		$("#slider").attr("style", "height: " + height + "px");
+		console.log(height+"----"+$("#slider").attr("style"));
+		/**console.log($(window).height()); //浏览器当前窗口可视区域高度
+	　　   console.log($(document).height()); //浏览器当前窗口文档的高度
+	　　   console.log($(document.body).height());//浏览器当前窗口文档body的高度
+	　　   console.log($(document.body).outerHeight(true));//浏览器当前窗口文档body的总高度 包括border padding margin
+	　　   console.log($(window).width()); //浏览器当前窗口可视区域宽度
+	　　   console.log($(document).width());//浏览器当前窗口文档对象宽度
+	　　   console.log($(document.body).width());//浏览器当前窗口文档body的宽度
+	　　   console.log($(document.body).outerWidth(true));//浏览器当前窗口文档body的总宽度 包括border padding margin*/
+		
+		mui.init({
+			swipeBack: false,
+			pullRefresh : [{
+			    container:"#scroll1",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等$('.mui-scroll-wrapper')
+			    down: {
+	                callback: function() {
+						mui(djScroll["pjList"]).pullRefresh().endPulldownToRefresh();
+						$("#pjListDIV").html("");
+						loadData(0, "", "");
+	            	}
+	            },
+			    up : {
+			      	height:50,//可选.默认50.触发上拉加载拖动距离
+			      	auto:true,//可选,默认false.自动上拉加载一次
+			      	contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      	contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      	callback:function() {
+						pageSizeApp(function(data) {
+							iDisplayLength = data;
+		                	console.log(iDisplayLength);
+		                	
+		                	var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+		                	setTimeout(function() {
+		                	// 加载更多的内容		
+		                	loadData(djType["pjList"] * iDisplayLength, "", "")
+		                	}, 500);
+						});
+	            	} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			},{
+			    container:"#scroll2",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等$('.mui-scroll-wrapper')
+			    down: {
+	                callback: function() {
+						mui(djScroll["pjList1"]).pullRefresh().endPulldownToRefresh();
+						$("#pjList1DIV").html("");
+						loadData(0, "0", "");
+	            	}
+	            },
+			    up : {
+			      	height:50,//可选.默认50.触发上拉加载拖动距离
+			      	auto:true,//可选,默认false.自动上拉加载一次
+			      	contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      	contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      	callback:function() {
+						pageSizeApp(function(data) {
+							iDisplayLength = data;
+		                	console.log(iDisplayLength);
+		                	
+		                	var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+		                	setTimeout(function() {
+		                	// 加载更多的内容		
+		                	loadData(djType["pjList1"] * iDisplayLength, "0", "");
+		                	}, 1000);
+		                	
+						});
+	            	} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			},{
+			    container:"#scroll3",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等$('.mui-scroll-wrapper')
+			    down: {
+	                callback: function() {
+						mui(djScroll["pjList2"]).pullRefresh().endPulldownToRefresh();
+						$("#pjList2DIV").html("");
+						loadData(0, "1", "");
+	            	}
+	            },
+			    up : {
+			      	height:50,//可选.默认50.触发上拉加载拖动距离
+			      	auto:true,//可选,默认false.自动上拉加载一次
+			      	contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      	contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      	callback:function() {
+						pageSizeApp(function(data) {
+							iDisplayLength = data;
+		                	console.log(iDisplayLength);
+		                	
+		                	var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+		                	setTimeout(function() {
+		                	// 加载更多的内容		
+		                	loadData(djType["pjList2"] * iDisplayLength, "1", "");
+		                	}, 1500);
+						});
+	            	} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			},{
+			    container:"#scroll4",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等$('.mui-scroll-wrapper')
+			    down: {
+	                callback: function() {
+						mui(djScroll["pjList3"]).pullRefresh().endPulldownToRefresh();
+						$("#pjList3DIV").html("");
+						loadData(0, "2", "");
+	            	}
+	            },
+			    up : {
+			      	height:50,//可选.默认50.触发上拉加载拖动距离
+			      	auto:true,//可选,默认false.自动上拉加载一次
+			      	contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+			      	contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+			      	callback:function() {
+						pageSizeApp(function(data) {
+							iDisplayLength = data;
+		                	console.log(iDisplayLength);
+		                	
+		                	var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+		                	setTimeout(function() {
+		                	// 加载更多的内容		
+		                	loadData(djType["pjList3"] * iDisplayLength, "2", "");
+		                	}, 2000);
+						});
+	            	} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			},{
+			    container:"#scroll5",//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等$('.mui-scroll-wrapper')
+			    down: {
+	                callback: function() {
+						mui(djScroll["pjList4"]).pullRefresh().endPulldownToRefresh();
+						$("#pjList4DIV").html("");
+						loadData(0, "99", "");
+	            	}
+	            },
+			    up : {
+			      	auto:true,//可选,默认false.自动上拉加载一次
+			      	callback:function() {
+						pageSizeApp(function(data) {
+							iDisplayLength = data;
+		                	console.log(iDisplayLength);
+		                	
+		                	var self = this; // 这里的this == mui('#refreshContainer').pullRefresh()
+		                	setTimeout(function() {
+		                	// 加载更多的内容		
+		                	loadData(djType["pjList4"] * iDisplayLength, "99", "");
+		                	}, 2500);
+						});
+	            	} //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			}]
+		});
+
+		
+		$("#pjListDIV").html("");
+		mui(djScroll["pjList"]).pullRefresh().refresh(true);     //恢复滚动
+		mui(djScroll["pjList"]).pullRefresh().scrollTo(0,0,100); //滚动置顶
+		
+		$("#pjList1DIV").html("");
+		mui(djScroll["pjList1"]).pullRefresh().refresh(true);     //恢复滚动
+		mui(djScroll["pjList1"]).pullRefresh().scrollTo(0,0,100); //滚动置顶
+		
+		$("#pjList2DIV").html("");
+		mui(djScroll["pjList2"]).pullRefresh().refresh(true);     //恢复滚动
+		mui(djScroll["pjList2"]).pullRefresh().scrollTo(0,0,100); //滚动置顶
+		
+		$("#pjList3DIV").html("");
+		mui(djScroll["pjList3"]).pullRefresh().refresh(true);     //恢复滚动
+		mui(djScroll["pjList3"]).pullRefresh().scrollTo(0,0,100); //滚动置顶
+		
+		$("#pjList4DIV").html("");
+		mui(djScroll["pjList4"]).pullRefresh().refresh(true);     //恢复滚动
+		mui(djScroll["pjList4"]).pullRefresh().scrollTo(0,0,100); //滚动置顶
+	});
+	
+	
+	var loadData = function(startRow, status, change) {
+		var loadIndex = "";
+		var aoData = [];
+		var m = new Object();
+		if(status != "") {
+			aoData.push({"name":"status","value":status});
+			m.status = status;
+		}
+		aoData.push({"name":"iDisplayLength","value":iDisplayLength});
+		aoData.push({"name":"iDisplayStart","value":startRow});
+		
+		aoData.push({"name":"param","value":m});
+		
+		$.ajax({ url: serverUrl+"bi/QueryMainAction/queryList",
+			     headers: {
+			               	session_id:guid(),from:"rest"			               
+			     },
+				 method:"POST",
+				 contentType : 'application/json',
+			     data:JSON.stringify({"queryparams":aoData})
+			   }).success(function(data){	
+			   		if(data) {
+						var ret = JSON.parse(data);
+						if (ret.code != 1000) {
+							api.toast({"msg":ret.message});
+							return;
+						} 
+						if(ret.data == null) {
+							return;
+						}
+						
+	    				var item = document.getElementById(type);
+						var moreA = '<a class="mui-block mui-text-center am-btn-link p10 myxjd-more" style="position: fixed;" href="javascript: void(0);">没有更多了...</a>没有更多了...';
+						console.log(type+'------>'+item.querySelector('.mui-scroll').innerHTML.indexOf(moreA));
+						if(startRow==0 && ret.data.data.length == 0) {
+							// 如果没有更多数据了，则关闭上拉加载
+	    					mui(djScroll[type]).pullRefresh().endPullupToRefresh(true);
+	    					if(item.querySelector('.mui-scroll').innerHTML.indexOf(moreA) == -1) {
+								item.querySelector('.mui-scroll').innerHTML += moreA;
+							}
+						} else if(ret.data.data.length == 0) {
+							// 如果没有更多数据了，则关闭上拉加载
+	    					mui(djScroll[type]).pullRefresh().endPullupToRefresh(true);
+	    					if(item.querySelector('.mui-scroll').innerHTML.indexOf(moreA) == -1) {
+								item.querySelector('.mui-scroll').innerHTML += moreA;
+							}
+				   		} else {
+					   		// 如果有更多数据，则继续
+							//console.log(mui(djScroll[type]).pullRefresh());
+	    					mui(djScroll[type]).pullRefresh().endPullupToRefresh(false);
+	    					
+				   			template.helper("timeStamp2String", timeStamp2String);
+					   		var mainHtml=template("tplMainTable", {"mains" : ret.data.data});
+					   		//api.alert({msg: mainHtml});
+							//$("#"+type+"DIV").append(mainHtml); 
+							item.querySelector('.mui-scroll').innerHTML += mainHtml;
+							djType[type] = djType[type] + 1;
+							//console.log(type+'-------------->'+item.querySelector('.mui-scroll').innerHTML);
+							if(ret.data.data.length < iDisplayLength && item.querySelector('.mui-scroll').innerHTML.indexOf(moreA) == -1) {
+								item.querySelector('.mui-scroll').innerHTML += moreA;
+							}
+				   		}
+					}
+			});
+	};
+	
+	(function($) {
+		$('.mui-scroll-wrapper').scroll({
+			indicators: true //是否显示滚动条
+		});
+		var html2 = "";//$("#pjList1").html();
+		var html3 = "";//$("#pjList2").html();
+		var html4 = "";//$("#pjList3").html();
+		var html5 = "";//$("#pjList4").html();
+		var item1 = document.getElementById('pjList');
+		var item2 = document.getElementById('pjList1');
+		var item3 = document.getElementById('pjList2');
+		var item4 = document.getElementById('pjList3');
+		var item5 = document.getElementById('pjList4');
+		document.getElementById('slider').addEventListener('slide', function(e) {
+			//console.log(e.detail.slideNumber);
+			if (e.detail.slideNumber === 0) {
+				//if (item1.querySelector('.mui-loading')) {
+					setTimeout(function() {
+						//item1.querySelector('.mui-scroll').innerHTML = html1;
+						//console.log(iDisplayLength);
+						type = 'pjList';
+						status = "";
+						loadData(djType[type] * iDisplayLength, status, "");
+					}, 500);
+				//}
+			} else if (e.detail.slideNumber === 1) {
+				//if (item2.querySelector('.mui-loading')) {
+					setTimeout(function() {
+						//item2.querySelector('.mui-scroll').innerHTML = html2;			      		
+						type = 'pjList1';
+						status = 0;
+						loadData(djType[type] * iDisplayLength, status, "");
+					}, 500);
+				//}
+			} else if (e.detail.slideNumber === 2) {
+				//if (item3.querySelector('.mui-loading')) {
+					setTimeout(function() {
+						//item3.querySelector('.mui-scroll').innerHTML = html3;
+						type = 'pjList2';
+						status = 1;
+						loadData(djType[type] * iDisplayLength, status, "");
+					}, 500);
+				//}
+			}else if (e.detail.slideNumber === 3) {
+				//if (item4.querySelector('.mui-loading')) {
+					setTimeout(function() {
+						//item4.querySelector('.mui-scroll').innerHTML = html4;
+						type = 'pjList3';
+						status = 2;
+						loadData(djType[type] * iDisplayLength, status, "");
+					}, 500);
+				//}
+			}else if (e.detail.slideNumber === 4) {
+				//if (item5.querySelector('.mui-loading')) {
+					setTimeout(function() {
+						//item5.querySelector('.mui-scroll').innerHTML = html5;
+						type = 'pjList4';
+						status = 99;
+						loadData(djType[type] * iDisplayLength, status, "");
+					}, 500);
+				//}
+			}
+		});
+
+	})(mui);
+
+	//取消
+	function doCancel(id) {
+		//console.log(id);
+		var btnArray = ['否', '是'];
+		mui.confirm('确定要取消询价吗？', function(e) {
+			if (e.index == 1) {
+				$.ajax({url: serverUrl+"bi/QueryMainAction/saveCancel/" + id,
+						 headers: {
+							       session_id:guid(),from:"rest",			               
+							      },
+					  	 method:"POST",
+						 contentType : 'application/json'
+				}).success(function(data){
+					djType[type] = 0;
+					//mui(djScroll[type]).pullRefresh().endPulldownToRefresh();
+					$("#"+type+"DIV").html("");
+					loadData(djType[type], status ,"change");
+				});
+			} 
+		});
+		
+	}
+	
+	function doOpenView(id) {
+		console.log(id);
+	}
+	
+	mui('body').on('tap','a',function(){
+		if(this.className != "mui-control-item") {
+	    	document.location.href = this.href;
+	    }
+	});
+</script>
+</html>

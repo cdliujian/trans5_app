@@ -1,66 +1,122 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-<head>
+<head lang="en">
     <meta charset="utf-8">
-    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width"/>
-    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
-    <title>Hello APP</title>
-    <link rel="stylesheet" type="text/css" href="../css/api.css" />
-	<style>
-		#con{
-			margin: 10px;
-			font-size: 24px; 
-		}
-		ul{
-			margin-bottom: 10px;
-		}
-		ul li{ 
-			margin: 5px 10px;
-			padding: 5px;
-			color: #000;
-			word-wrap: break-word;
-		}
-	</style>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="../css/mui.min.css" rel="stylesheet" />
+    <link href="../css/style.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="../css/app.css"/>
+    <link rel="stylesheet" href="../css/public.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>首页</title>
 </head>
-<body>
-    <label id="con">Hello APP</label>
-	<div id='sys-info'></div>
-</body>
-<script type="text/javascript" src="../script/api.js"></script>
-<script type="text/javascript">
-    apiready = function(){
-		var ver = api.version;
-		var sType = api.systemType;
-		var sVer = api.systemVersion;
-		var id = api.deviceId;
-		var model = api.deviceModel;
-		var name = api.deviceName;
-		var cType = api.connectionType;
-		var winName = api.winName;
-		var winWidth = api.winWidth;
-		var winHeight = api.winHeight;
-		var frameName = api.frameName || '';
-		var frameWidth = api.frameWidth || '';
-		var frameHeight = api.frameHeight || '';
+<body class="bg-thingray">
 
-		var str = '<ul>';
-		str += '<li>引擎版本信息: ' + ver + '</li>';
-		str += '<li>系统类型: ' + sType + '</li>';
-		str += '<li>系统版本: ' + sVer + '</li>';
-		str += '<li>设备标识: ' + id + '</li>';
-		str += '<li>设备型号: ' + model + '</li>';
-		str += '<li>设备名称: ' + name + '</li>';
-		str += '<li>网络状态: ' + cType + '</li>';
-		str += '<li>主窗口名字: ' + winName + '</li>';
-		str += '<li>主窗口宽度: ' + winWidth + '</li>';
-		str += '<li>主窗口高度: ' + winHeight + '</li>';
-		str += '<li>子窗口名字: ' + frameName + '</li>';
-		str += '<li>子窗口宽度: ' + frameWidth + '</li>';
-		str += '<li>子窗口高度: ' + frameHeight + '</li>';
-		str += '</ul>';
+<div class="c333 mui-content pbottom49">
+    <div class="index-img bg-white">
+		<div id="slider" class="mui-slider" >
+			<div class="mui-slider-group mui-slider-loop">
+				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<a href="javascript:alert('ok')">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+				<!-- 第一张 -->
+				<div class="mui-slider-item">
+					<a href="#">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+				<!-- 第二张 -->
+				<div class="mui-slider-item">
+					<a href="#">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+				<!-- 第三张 -->
+				<div class="mui-slider-item">
+					<a href="#">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+				<!-- 第四张 -->
+				<div class="mui-slider-item">
+					<a href="#">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<a href="#">
+						<img src="../images/index/banner.png">
+					</a>
+				</div>
+			</div>
+			<div class="mui-slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+				<div class="mui-indicator"></div>
+				<div class="mui-indicator"></div>
+				<div class="mui-indicator"></div>
+			</div>
+		</div>
+    </div>
+	<div class="bg-white mui-text-center t13 ptop10 pbottom10">
+		<div class="mui-col-xs-4 fl">
+		   <a href="javascript:openWin('mall','./mall/mallGoodsList.html')">
+			<img src="../images/index/index-list1.png" width="50" height="50" >
+			<span class="mui-block ptop10">买油液易损件</span>
+			</a>
+		</div>
+		<div class="mui-col-xs-4 fl">
+			<img src="../images/index/index-list2.png" width="50" height="50">
+			<span class="mui-block ptop10">询价买配件</span>
+		</div>
+		<div class="mui-col-xs-4 fl">
+			<img src="../images/index/index-list3.png" width="50" height="50">
+			<span class="mui-block ptop10">直接下单</span>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="bg-white mtop10 index-list">
+		<div class="mui-col-xs-6 index-listli fl border-right border-bottom" id="demo">
+			<img class="fl mtop10 mright10 mleft10" src="../images/index/gys-icon1.png" width="22" height="22">
+			<div class="c333 t13 fl">我的询价单 <span class="index-listli-tips">20</span><br><span class="c999 t12">查看订单报价详情</span> </div>
+		</div>
+		<div class="mui-col-xs-6 index-listli fl border-bottom">
+			<img class="fl mtop10 mright10 mleft10" src="../images/index/gys-icon2.png" width="22" height="22">
+			<div class="c333 t13 fl">我的采购单<br><span class="c999 t12">查看采购订单详情</span> </div>
+		</div>
+		<div class="mui-col-xs-6 index-listli fl border-right">
+			<img class="fl mtop10 mright10 mleft10" src="../images/index/gys-icon3.png" width="22" height="22">
+			<div class="c333 t13 fl">我的退货单<br><span class="c999 t12">查看所有退货信息</span> </div>
+		</div>
+		<div class="mui-col-xs-6 index-listli fl">
+			<img class="fl mtop10 mright10 mleft10" src="../images/index/gys-icon4.png" width="22" height="22">
+			<div class="c333 t13 fl">我的物流<br><span class="c999 t12">实时查询物流信息</span> </div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<!-- <div class="bg-white mtop10 p10 t13">
+		<div class="index-yf-h mbottom10">
+			<span class="index-yf-h-t">五号越付</span>
+			<span class="fr index-yf-h-r">什么是五号越付？</span>
+		</div>
+		<div class="clear"></div>
+		<div class="index-img mbottom10"><img src="../images/index/gys-b-banner.png"> </div>
 
-		$api.byId('sys-info').innerHTML = str;
+	</div> -->
+</div>
 
-    };
+
+<script src="../script/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+		apiready = function(){
+		   
+		}
+		function openWin(winName,url){
+		   api.openWin({name:winName,url:url})
+		}	
 </script>
+</body>
 </html>

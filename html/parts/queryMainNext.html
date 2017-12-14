@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<style>
+        .mui-plus header.mui-bar {
+            display: none!important;
+        }
+        .mui-plus .mui-bar-nav~.mui-content {
+            padding: 0!important;
+        }
+
+        .mui-plus .plus{
+            display: inline;
+        }
+
+        .plus{
+            display: none;
+        }
+
+        #topPopover {
+            position: fixed;
+            top: 16px;
+            right: 6px;
+        }
+        #topPopover .mui-popover-arrow {
+            left: auto;
+            right: 6px;
+        }
+        p {
+            text-indent: 22px;
+        }
+        /*span.mui-icon {
+            font-size: 14px;
+            color: #007aff;
+            margin-left: -15px;
+            padding-right: 10px;
+        }*/
+        .mui-popover {
+            height: 180px;
+        }
+        .mui-content {
+            padding: 10px;
+        }
+    </style>
+	<title>添加配件</title>
+</head>
+<body class="t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-icon mui-icon-left-nav c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		添加配件
+	</div>
+</header>
+<div class="mui-content pbottom49 bg-white">
+	<div class="add-pj-top p10 t12">为了获得更准确的报价,请务必填写准确的零部件名称或是备注</div>
+	<div class="bg-white p10 pbottom0 mui-text-center" style="padding-top: 100px;" id="noPartsDIV">
+		<img src="images/xunjia-maipeijian/bg.png" width="109">
+		<div class="p10">您还未添加配件，点击添加配件<br>
+			按钮来添加您需要询价的配件吧</div>		
+	</div>
+	<div id="partsDIV">	
+	</div>
+	<div class="p10" id="imgDIV" style="display: none;">		
+		<!--<div class="clear"></div>-->
+	</div>
+</div>
+<div class="sc-footer bg-white t14 mui-text-center sc-footer-list">
+	<a href="javascript: doAddParts();" class="mui-col-xs-4 fl c333 border-right" style="height: 49px;padding-top: 15px;">
+		<img style="vertical-align: middle" src="images/xunjia-maipeijian/nav-icon1.png" width="20" height="20">
+		<span>添加配件</span>
+	</a>
+	<a class="mui-col-xs-4 fl c333 ptop10" href="javascript: showAction();" style="height: 49px;padding-top: 15px;">
+		<img style="vertical-align: middle" src="images/xunjia-maipeijian/nav-icon2.png" width="20" height="20">
+		<span>上传图片</span>
+	</a>
+
+	<a class="mui-col-xs-4 fl t14 sc-ljgm-btn" href="javascript: doSave();">
+		提交询价
+	</a>
+</div>
+<div id="info"></div>
+<!--右上角弹出菜单-->
+<div id="topPopover" class="mui-popover" style="z-index: 1001">
+    <div class="mui-popover-arrow"></div>
+    <div class="mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <ul class="mui-table-view">
+                <li class="mui-table-view-cell">
+                    <a href="javascript: chooseType('原厂件');">原厂件</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="javascript: chooseType('正厂件');">正厂件</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="javascript: chooseType('品牌件');">品牌件</a>
+                </li>
+                <li class="mui-table-view-cell"><a href="javascript: chooseType('原&正&品');">原&正&品</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script id="tplPartsTable" type="text/html">
+	<div class="bg-f8f8f8 pbottom10" id="div_{{counter}}">
+		<div class="border-bottom p10 bg-white">
+			<div class="fl ptop10">{{partsName}}</div>
+			<div class="fr">
+				<a class="am-btn-link fr mtop10 mleft10 pleft10" href="javascript: void(0);" onclick="deletePartsNameOrImg('div_{{counter}}', 'details');">删除</a>
+				<div class="mui-numbox sc-con-jj">
+					<button class="mui-btn mui-btn-numbox-minus sc-jian2" type="button" onclick="addNum('num_{{counter}}', -1);"></button>
+					<input class="mui-input-numbox sc-jjinput2" type="number" value="1" id="num_{{counter}}"/>
+					<button class="mui-btn mui-btn-numbox-plus sc-jia2" type="button" onclick="addNum('num_{{counter}}', 1);"></button>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom p10 bg-white">
+			<div class="fl c666 addpj-left">品质</div>
+			<div class="fr"><a class="c333" href="javascript: doShowPopover('a_{{counter}}');" id="a_{{counter}}">原&正&品 <span class="mui-icon mui-icon-arrowright t14 c999"></span></a> </div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom p10 bg-white">
+			<div class="fl c666 addpj-left mtop3">备注</div>
+            <div class="fl addpj-right"><input type="text" onblur="stripscript(this);"></div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</script>
+
+<script id="tplImgsTable" type="text/html">
+		<div class="mui-col-xs-4 fl addpj-imglist" id="img_{{counter}}">
+			<div class="addpj-img">
+				<img src="{{setPicSrc(imgSrc)}}">
+				<span class="mui-icon mui-icon-close-filled" onclick="deletePartsNameOrImg('img_{{counter}}', 'img')"></span>
+			</div>
+		</div>
+</script>
+</body>
+<script type="text/javascript" src="script/mui.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/appUpload.js"></script>
+<script type="text/javascript" src="script/utils.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var QueryMain = new Object();
+	var typeMap = {}; //类型map
+	var counter = 0; //配件数
+	var imgCount = 0; //图片上传张数
+	
+	var chooseCounter = -1; //点击某一行品质弹框
+	apiready = function(){
+		QueryMain = api.pageParam.QueryMain;
+		//解决打开输入法，挡住文本框的问题
+		if (/Android/gi.test(navigator.userAgent)) {
+	        window.addEventListener('resize', function () {
+	            if (document.activeElement.tagName == 'INPUT' || document.activeElement.tagName == 'TEXTAREA') {
+	                window.setTimeout(function () {
+	                    document.activeElement.scrollIntoViewIfNeeded();
+	                }, 0);
+	            }
+	        })
+	    }
+		
+		typeMap["原厂件"] = 0;
+		typeMap["正厂件"] = 1;
+		typeMap["品牌件"] = 2;
+		typeMap["原&正&品"] = 3;
+		
+		//console.log(QueryMain.brandName);
+	}
+	
+	//显示品质弹框
+	function doShowPopover(aName) {
+		mui('.mui-popover').popover('show', document.getElementById(aName));
+		chooseCounter = aName.replace("a_", "");
+		//console.log(chooseCounter);
+	}
+	
+	//选择品质
+	function chooseType(typeStr) {
+		var oldTypeStr = document.getElementById("a_" + chooseCounter).innerText.replace(/&/g, "&amp;");
+		var html = document.getElementById("a_" + chooseCounter).innerHTML;
+		//console.log(oldTypeStr);
+		//console.log(html);
+		document.getElementById("a_" + chooseCounter).innerHTML = html.replace(oldTypeStr, typeStr);
+		//console.log(document.getElementById("a_" + chooseCounter).innerText);
+		mui('.mui-popover').popover('toggle');
+	}
+	
+	function close() {
+		api.closeWin({name: "queryMainNextPage"});
+	}
+	
+	//添加配件
+	function doAddParts() {
+		api.openWin({
+		    name: "addPartsPage",
+		    url: "./addParts.html"
+		});	
+	}
+	
+	//添加已选中配件
+	function addPartsList(psrtsNames) {
+		console.log(psrtsNames);
+		if(psrtsNames!= "") {
+			$("#noPartsDIV").hide();
+			//$("#partsDIV").html("");
+			var partsNameArr = psrtsNames.split(",");
+			console.log(partsNameArr.length);
+			for(var i = 0; i < partsNameArr.length - 1; i++) {
+				var partsName = partsNameArr[i];
+				if($.trim(partsName) != "") {
+					var html=template("tplPartsTable", {"partsName" : partsName, "counter" : counter});
+					$("#partsDIV").append(html);
+					//console.log($("#partsDIV").html());
+					counter++;
+				}
+			}
+		}
+	}
+	
+	//删除配件或者图片
+	function deletePartsNameOrImg(divName, fileType) {
+		console.log(divName);
+		var obj = $("#" + divName);
+		obj.remove();
+		
+		if($.trim($("#partsDIV").html()) == "") {
+			$("#noPartsDIV").show();
+		}
+	}
+
+	//数字增加或减少
+	function addNum(name, count) {
+		console.log(name+","+count);
+		var value = parseInt($("#"+name).val());
+		var newnum = value + parseInt(count);
+		if(newnum <= 0) {
+			//layer.alert("第"+(i+1)+"行退货数量必须大于0！",	 {icon: 2});
+			return false;
+		}
+		if(newnum >= 9999) {
+			//layer.alert("第"+(i+1)+"行退货数量不能大于采购数量！", {icon: 2});
+			return false;
+		}
+		$("#"+name).val(newnum);
+	}
+
+	//图片上传回调
+	function uploadBack(path) {	
+		if(path == null) {
+			return;
+		}
+		
+		$("#imgDIV").show();
+		
+		template.helper("setPicSrc", setPicSrc);
+		var html=template("tplImgsTable", {"imgSrc" : path, "counter" : imgCount});
+		$("#imgDIV").append(html);
+		
+		imgCount++;
+	}
+
+	//提交
+	function doSave() {	
+		//配件明细
+		var details = [];
+		//获取可编辑表格中的数据	
+		var partsDIV = $("#partsDIV");
+		var children = partsDIV[0].children;
+		if(children.length < 1) {
+			api.toast({"msg":"请添加配件信息"});	
+			return false;
+		}
+		for(var i = 0; i < children.length; i++) {
+			var div = children[i];
+			var partsName = $.trim(div.children[0].firstElementChild.innerText);
+		  	if(partsName == ""){
+		  		error_msg("请填写第"+(i+1)+"行名称");		
+		  		return false;
+		  	} else {
+		  		if(getStrLength(partsName) > 100) {
+		  			error_msg("第"+(i+1)+"行名称文字太多,请控制在50字以内");	
+		  			return false;
+		  		}
+		  	}
+		  	var num = $.trim(div.children[0].children[1].children[1].children[1].value);
+		  	if(num == ""){
+		  		error_msg("请填写第"+(i+1)+"行数量");		
+		  		return false;
+		  	} else {
+		  		if (!jugeIntgZero(num)) {
+						error_msg("第"+(i+1)+"行数量必须为大于0的整数");		
+			    		return false;
+					};
+		  	}
+			var remark = $.trim(div.children[2].children[1].firstElementChild.value);
+		  	if(remark != "" && getStrLength(remark) > 1000){
+		  		error_msg("第"+(i+1)+"行备注文字太多,请控制在500字以内");		
+		  		return false;
+		  	}
+		  	
+		  	var type = $.trim(div.children[1].children[1].children[0].innerText); 
+		  	//type = type.replace("类型 ","");
+		  	
+		  	var QueryDetail = new Object();  //配件询价子表,字段要和对应的POJO对象一样 
+		  	//QueryDetail.partsCode = partsCode;
+		  	QueryDetail.partsName = partsName;
+		  	QueryDetail.type = typeMap[type];
+		  	QueryDetail.num = num;
+		  	QueryDetail.remark = remark;
+		  	QueryDetail.seq = i + 1;
+			
+			details.push(QueryDetail);
+		}	
+		QueryMain.details = details;
+		//图片明细
+		var files = [];
+		var imgDIV = $("#imgDIV");
+		var children = imgDIV[0].children;
+		for(var i = 0; i < children.length; i++) {
+			var o = children[i].children[0].children[0];
+			if(o != null) {
+				var Files = new Object();
+				Files.picAddress = o.src.substring(0, o.src.indexOf("?"));
+				Files.name = o.alt;
+				
+				files.push(Files);
+			}
+		}
+		QueryMain.files = files;
+		
+		var url = "bi/QueryMainAction/add";
+		$.ajax({ url: serverUrl+url,
+				 headers: {
+					       session_id:guid(),from:"rest",			               
+					      },
+			  	 method:"POST",
+				 contentType : 'application/json',
+			  	 data:JSON.stringify(QueryMain)
+		}).success(function(data){
+			if(data) {
+				var ret = JSON.parse(data);
+				if (ret.code != 1000) {
+					api.toast({"msg":ret.message});
+					return;
+				} 	
+				if(ret.data == null) {
+					return;
+				}
+				
+				api.toast({"msg":"操作成功!"});
+				api.openWin({
+					name: "queryMainListPage",
+					url: "./queryMainList.html"
+				});	 
+	
+				api.closeWin({name: "queryMainNextPage"});
+				api.closeWin({name: "queryMainPage"});
+			}
+		});
+	}
+	
+    /**mui('.mui-scroll-wrapper').scroll();
+    mui('body').on('shown', '.mui-popover', function(e) {
+        //console.log('shown', e.detail.id);//detail为当前popover元素
+        var detail = e.detail;
+        var children = detail.children[1];
+        var firstElementChild = children.firstElementChild.firstElementChild; //ul
+        var childrenLI = firstElementChild.children; //li
+    });
+    mui('body').on('hidden', '.mui-popover', function(e) {
+        //console.log('hidden', e.detail.id);//detail为当前popover元素
+    });*/
+</script>
+</html>

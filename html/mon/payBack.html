@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<base href="./../../" />
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+/>
+<link href="css/mui.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/app.css" />
+<link href="css/mui.picker.css" rel="stylesheet" />
+<link href="css/mui.poppicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/public.css" />
+<link rel="stylesheet" href="css/main.css" />
+	<title>还款</title>
+</head>
+<body class="bg-f8f8f8 t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader">
+		<a class="mui-icon mui-icon-left-nav c333" href="javascript: close()"></a>
+	<h1 class="mui-title">还款</h1>
+</header>
+<div class="mui-content">
+	<div class="bg-white p10 mui-text-center qrpay-top mbottom10">
+		<span class="c999">应还金额（元）</span>
+		<div class="numf tbiger pbottom10" style="line-height: 50px;" id="amount"></div>
+
+	</div>
+	<div class="bg-white p10">
+		<div class="mui-text-left ptop10 pbottom10 border-bottom mtop10 huankuan">
+			<div class="mui-input-row zhmmyzm">
+				<label class="pleft0">还款金额</label>
+				<input class="mui-input-clear mui-input" type="text" placeholder="请输入还款金额" id="money">
+				<a href="javascript:payAll()" class="mm-yzm" style="border-left: none;">全额还款</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="ptop10">
+			<div class="c000">还款说明</div>
+			<div class="c333 ptop10 pbottom10">
+				1、每次还款将优先偿还最早的账单。<br>
+				2、为了确保资金安全，对于您的每次支付，银行以及支付系统都进行了限额。<br>
+				3、支付系统的限额大部分是每次2万，如果超过2万，建议分多次支付。<br>
+				4、银行每次支付限额以各个银行标准为准，您可以通过银行柜台或是网银来提高资金限额。
+			</div>
+		</div>
+	</div>
+	<div class="p10 mtop10">
+		<a class="mui-block mui-btn btn-orange hk-btn" href="javascript:payNow()">立即还款</a>
+	</div>
+</div>
+<script src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+
+<script type="text/javascript">
+	var amount=0;
+	var orderNo=0;
+	var mainId=0;
+	apiready = function(){
+		amount=api.pageParam.amount;
+		orderNo=api.pageParam.orderNo;
+		mainId=api.pageParam.mainId;
+		if(amount==0 || orderNo==0 || mainId==0){
+			api.toast({"msg":"数据刷新失败，请刷新页面。"});
+		}else{
+
+			$("#amount").html(parseFloat(amount).toFixed(2));
+
+
+		}
+
+	 };
+
+	 function close() {
+	 	api.closeWin();
+	 }
+
+	 function payAll(){//如果出现特殊情况取不到传过来的金额就再取一次，醉了
+		 if(amount==0){
+			 var all=api.pageParam.amount;
+			 $("#money").val(all);
+		 }else{
+
+			$("#money").val(amount);
+		 }
+	 }
+
+
+
+
+	function payNow(){
+
+		if(parseFloat(money)>parseFloat(amount)){
+
+			api.toast({"msg":"请输入正确的金额"});
+			return;
+		}
+
+		var para = new Object();
+		var money=$("#money").val();
+		para.money = money;
+		para.mainId =mainId;
+		para.yfBillNo =orderNo;
+		alert(money+"-----"+mainId+"+++++++++"+orderNo);
+		var strparam=JSON.stringify(para);
+
+
+		api.openWin({
+			name : "queren-pay",
+			url : "../pay/queren-pay.html",
+			pageParam : {
+				orderAmount : amount,
+				orderNo:orderNo,
+				busType:"22",
+				serviceName:"Mon.MonYfBillService#saveMoneyReturnCallBack",
+				serviceParam:strparam
+			}
+		});
+
+	}
+
+
+</script>
+</body>
+</html>

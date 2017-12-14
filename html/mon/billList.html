@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<base href="./../../" />
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+/>
+<link href="css/mui.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/app.css" />
+<link href="css/mui.picker.css" rel="stylesheet" />
+<link href="css/mui.poppicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/public.css" />
+<link rel="stylesheet" href="css/main.css" />
+
+	<title>待还账单</title>
+</head>
+<body class="bg-f8f8f8 t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader">
+	<a class="mui-icon mui-icon-left-nav c333" href="javascript: close()"></a>
+	<h1 class="mui-title">待还账单</h1>
+</header>
+<div class="mui-content bg-f8f8f8" id="listDiv">
+
+
+
+
+</div>
+
+<script src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+
+<script id="tpList" type="text/html">
+{{each list as data i}}
+
+	<div class="bg-white p10 mbottom10">
+		<div class="mui-text-left pbottom10 border-bottom mtop3">
+			<span class="">{{data.BILL_NO}}月账单</span> <span class="fr c666">还款日  {{data.REPLY_DATE}}</span>
+			<div class="clear"></div>
+		</div>
+		<div class="mui-text-left t13 ptop10">
+			<span class="">账单金额</span> <span class="fr">{{data.BILL_AMOUNT.toFixed(2)}}元</span>
+			<div class="clear"></div>
+		</div>
+		<div class="mui-text-left t13">
+			<span class="">剩余应还</span> <span class="fr">{{data.NOT_REPLY.toFixed(2)}}元</span>
+			<div class="clear"></div>
+		</div>
+		{{if data.INTEREST!=0}}<div class="mui-text-left t13">
+			<span class="">逾期利息</span> <span class="fr orange">{{data.INTEREST.toFixed(2)}}元</span>
+			<div class="clear"></div>
+		</div>
+		{{/if}}
+	</div>
+
+{{/each}}
+</script>
+
+<script type="text/javascript">
+
+
+
+apiready = function(){
+
+	   getList();
+
+	 };
+
+
+
+	 function close() {
+	 	api.closeWin();
+	 }
+
+
+
+
+
+
+function getList(){
+	  $.ajax({ url: serverUrl+"bi/MonYfBillAction/getLastPayInfo",
+	           headers: {
+	                   session_id:guid(),from:"rest",
+	                  },
+	             method:"POST",
+	           contentType : 'application/json'
+	      }).success(function(data){
+	        if(data) {
+	              var ret = JSON.parse(data);
+	              if (ret.code != 1000) {
+	                api.toast({"msg":ret.message});
+	                return;
+	              }
+	            if(ret.data == null) {
+	              return;
+	            }
+	            var d=ret.data;
+	            if(d.length>0){
+	            	var pattern = /(\d{4})(\d{2})/;
+	            	 var html=template("tpList", {"list" : d,"pattern":pattern});
+	            	$("#listDiv").html(html);
+
+	            }
+
+	          }
+	      });
+	}
+
+</script>
+
+
+
+
+</body>
+</html>

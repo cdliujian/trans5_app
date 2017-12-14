@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <base href="../">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="../css/mui.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../css/app.css" />
+    <link href="../css/mui.picker.css" rel="stylesheet" />
+    <link href="../css/mui.poppicker.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/public.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <title>填写增票资质</title>
+</head>
+<body class="t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333"></a>
+    <div class="mui-title pright10">
+        增票资质
+    </div>
+</header>
+<div class="mui-content bg-white">
+    <div class="bg-white mbottom10 p10 pbottom0 mui-text-center" style="padding-top: 100px;">
+        <img src="../images/my/zpzz.png" width="115">
+        <div class="p10">您还未添加增票资质</div>
+        <div class="mtop10"><a class="mui-btn btn-orange" href="javascript:ifCollection();">添加增票资质</a> </div>
+    </div>
+</div>
+
+<script src="../script/jquery.min.js"></script>
+<script src="../script/common.js"></script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script>
+apiready=function(){
+	window.fixStatusBar = function(){
+		var statusBarAppearance = api.statusBarAppearance;
+			if(statusBarAppearance){
+				$('header').each(function(){
+					$api.fixStatusBar(this);
+
+				});
+				$('.scroll-wrapper').each(function(){
+					$api.fixStatusBar(this);
+					$(this).addClass("con-top3")
+				});
+			}else{
+				$('header').addClass('mheader');
+			}
+		 };
+	 window.fixStatusBar();
+
+}
+function collection(){
+	var url = "bi/ChainReceiveCollectionAction/save";
+	var chainReceiveCollection = new Object();
+	chainReceiveCollection.senderId = 222;
+  	chainReceiveCollection.flag = false;
+	var param = {
+			"method" : "post",
+			"dataType" : "json",
+			"headers": {"Content-Type":"application/json"},
+			"data" : {"body" : JSON.stringify(chainReceiveCollection)}
+	};
+	ajax(url,param, null, null, function(data){alert(JSON.stringify(data));});
+}
+
+function collectionInfo(){
+	var url = "bi/ChainReceiveCollectionAction/queryColleciontInfo";
+
+	var param = {
+			"method" : "get",
+			"dataType" : "json",
+			"headers": {"Content-Type":"application/json"}
+	};
+	ajax(url,param, null, null, function(data){alert(JSON.stringify(data));});
+}
+
+function ifCollection(){
+	var url = "bi/ChainReceiveCollectionAction/queryIfCollection";
+	var param = new Object();
+	param.senderId = 25911;
+	var param = {
+			"method" : "post",
+			"dataType" : "json",
+			"headers": {"Content-Type":"application/json"},
+			"data" : {"body" : JSON.stringify(param)}
+	};
+	ajax(url,param, null, null, function(data){alert(JSON.stringify(data));});
+}
+function editForm() {
+
+	var url = "bi/InvoiceOrgreceiveAction/getInvoiceInfoNew";
+	var param = {
+			"method" : "get",
+			"dataType" : "json",
+			"headers": {"Content-Type":"application/json"}
+	};
+
+
+ 	ajax(url,param, null, null, function(data){
+		if(data!=null && data.status==1){
+			api.toast({msg:"已经通过审核，不能修改"});
+			return;
+		}
+		api.openWin({
+		    name: "invoiceForm",
+		    url: "../invoice/invoiceForm.html"
+		});
+	});
+}
+</script>
+</body>
+</html>

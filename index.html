@@ -1,68 +1,148 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
+<head lang="en">
     <meta charset="utf-8">
-    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
-    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
-    <title>Hello APP</title>
-    <link rel="stylesheet" type="text/css" href="./css/api.css" />
-    <style type="text/css">
-    html,body{
-        height: 100%;
-    }
-    #wrap{
-        height: 100%;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-flex-flow: column;
-    }
-    #header{
-        text-align: center; 
-		background-color: #81a9c3; 
-		color: #fff;
-        width: 100%;
-    }
-    #header h1{
-        font-size: 20px; 
-		height: 44px; 
-		line-height: 44px; 
-		margin: 0em; 
-		color: #fff;
-    }
-    #main{
-        -webkit-box-flex: 1; 
-        -webkit-flex: 1;
-    }
-    #footer{
-        height: 30px; 
-		line-height: 30px;
-        background-color: #81a9c3; 
-        width: 100%;
-        text-align: center;
-    }
-    #footer h5{
-        color: white;
-    }
-    .con{
-		font-size: 28px; 
-		text-align: center;
-	}
-    </style>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="./css/mui.min.css" rel="stylesheet" />
+    <link href="./css/style.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="./css/app.css"/>
+    <link rel="stylesheet" href="./css/public.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <title>首页</title>
 </head>
-<body>
-    
-</body>
+<body class="bg-thingray">
+<header class="mui-bar mui-bar-nav log-header bg-f8f8f8">
+    <h1 class="mui-title">五号车云</h1>
+</header>
+<nav class="mui-bar mui-bar-tab t12">
+	<a class="mui-tab-item mui-active" href="javascript: showIframe('./html/main.html', 'homePage')" >
+		<span class="mui-block"><img src="./images/index/gys-icon44.png" width="24" id="homePageImg"> </span>
+		<span class="mui-tab-label c333">首页</span>
+	</a>
+	<a class="mui-tab-item" href="javascript: showIframe('./html/mall/mallGoodsList.html', 'supplye');">
+		<span class="mui-block"><img src="./images/index/gys-icon22.png" width="24" id="supplyeImg"> </span>
+		<span class="mui-tab-label c333">供应商</span>
+	</a>
+	<a class="mui-tab-item" href="#">
+		<span class="mui-block"><img src="./images/index/gys-icon33.png" width="24"> </span>
+		<span class="mui-tab-label c333">账单</span>
+	</a>
+	<a class="mui-tab-item" style="position: relative;" href="#">
+		<span class="index-listli-tips bottom-tips">20</span>
+		<span class="mui-block"><img src="./images/index/gys-icon11.png" width="24"> </span>
+		<span class="mui-tab-label c333">我的</span>
+	</a>
+</nav>
 <script type="text/javascript" src="./script/api.js"></script>
-<script type="text/javascript">
-    apiready = function(){
-		//输出Log，Log将显示在APICloud Studio控制台
-		console.log("Hello APICloud");
-
-        api.openWin({
-	        name: 'applogin',
-	        url: 'html/login/login.html'
-        });
-
-    };
-</script>
+<script src="./script/jquery.min.js"></script>
+<script src="./script/fastclick.js"></script>
+<script type="text/javascript" charset="utf-8">
+       if ('addEventListener' in document) {
+    	  document.addEventListener('DOMContentLoaded', function() {
+    	    FastClick.attach(document.body);
+    	  }, false);
+        }    
+			
+			
+			var flag=true;
+			
+			
+			apiready = function(){
+			    var userinfo = $api.getStorage("userinfo");
+			    if(!userinfo){
+					api.toast({
+					    msg: '登录已过期,请重新登录',
+					    duration: 2000,
+					    location: 'bottom'
+					});
+					api.openWin({
+				        name: 'applogin',
+				        url: './html/login/login.html',
+				        slidBackEnabled:false
+			        });
+					return;
+			    }
+			    
+			     
+			     
+			     api.openFrameGroup({
+				     name:"indexFrameGroup",
+				     scrollEnabled : false,
+				     rect:{
+				        marginBottom:"48px",
+				        marginTop:"48px"
+				     },
+				     frames:[
+				        {
+					        name:"homePage",
+					        url:"./html/main.html",
+					        scrollEnabled:false
+				        },
+				        {
+					        name:"supplye",
+					        url:"./html/mall/mallGoodsList.html"
+				        },
+				        {
+					        name:"bill",
+					        url:"./html/main.html"
+				        },
+				        {
+					        name:"myHome",
+					        url:"./html/main.html"
+				        }
+		
+				     ]
+		
+		
+		
+				 })
+			}
+			
+			var preLiName = "homePage";
+			
+			function showIframe(url, liName) {
+			    console.log(liName);
+				if(preLiName!=liName){
+					flag=true;
+				}
+				if(flag){
+					var pgindex  = 0;
+					console.log(liName);
+		
+					$("#"+preLiName).removeClass("mui-active");
+					if(preLiName == "homePage") {
+						$("#homePageImg").attr("src", "./images/index/gys-icon55.png");
+					} else if(preLiName == "supplye") {
+						$("#supplyeImg").attr("src", "./images/index/gys-icon22.png");
+					} else if(preLiName == "bill") {
+						$("#billImg").attr("src", "./images/index/gys-icon33.png");
+					} else if(preLiName == "myHome") {
+						$("#myHomeImg").attr("src", "web/app/images/icon04.png");
+					}
+					$("#"+liName).addClass("mui-active");
+					var reload = false;
+					if(liName == "homePage") {
+					    pgindex = 0;
+						$("#homePageImg").attr("src", "./images/index/gys-icon44.png");
+					} else if(liName == "supplye") {
+					    pgindex = 1;
+						$("#supplyeImg").attr("src", "./images/index/gys-icon66.png");
+					} else if(liName == "bill") {
+					    pgindex = 2;
+						$("#billImg").attr("src", "./images/index/gys-icon77.png");
+					} else if(liName == "myHome") {
+					    pgindex = 3;
+					    reload = true
+						$("#myHomeImg").attr("src", "web/app/images/icon44.png");
+					}
+					preLiName = liName;
+					api.setFrameGroupIndex({
+					    name: 'indexFrameGroup',
+					    index: pgindex,
+					    reload : reload
+					});
+				}
+			}	
+		</script>
+</body>
 </html>

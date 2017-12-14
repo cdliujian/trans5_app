@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="../../css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+	<link rel="stylesheet" href="../../css/public.css">
+	<link rel="stylesheet" href="../../css/main.css">
+	<title>确认支付</title>
+</head>
+<body class="bg-f8f8f8 t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript:api.closeWin()"></a>
+	<h1 class="mui-title">确认支付</h1>
+</header>
+<div class="mui-content" id="mui-content">
+	<div class="bg-white p10 mui-text-center qrpay-top mbottom10 pbottom0">
+		<span class="c999">订单金额（元）</span>
+		<div class="numf tbiger" style="line-height: 50px;">900.00</div>
+		<div class="mui-text-left ptop10 pbottom10 border-bottom mtop10">
+			<span class="c999">订单编号</span> <span class="fr">{{orderNo}}</span>
+			<div class="clear"></div>
+		</div>
+		<div class="mui-text-left ptop10 pbottom10 border-bottom">
+			<span class="c999">供应商</span> <span class="fr">万事达（中南）</span>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="bg-white p10">
+		<div class="ptop6 pbottom6">支付方式</div>
+		<div class="border-bottom ptop10 pbottom10">
+			<div class="fl mtop10 pright10">
+				<img src="../../images/quick-order/yue-pay.png" width="20" height="20">
+			</div>
+			<div class="fl">
+				五号越付<span class="yf-btn mleft10">推荐</span><br>
+				<span class="c999 t13">可用余额20000.00元</span>
+
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" href="###">确认支付</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom ptop10 pbottom10">
+			<div class="fl mtop10 pright10">
+				<img src="../../images/quick-order/wx-pay.png" width="20" height="20">
+			</div>
+			<div class="fl">
+				微信支付<br>
+				<span class="c999 t13">支持信用卡支付</span>
+
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" href="###">前往支付</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom ptop10 pbottom10">
+			<div class="fl mtop6 pright10">
+				<img src="../../images/quick-order/jd-pay.png" width="20" height="20">
+			</div>
+			<div class="fl mtop6">
+				货到付款
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" href="###">前往支付</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</div>
+<script id="tplSuccess" type="text/html">
+   <div class="bg-white p10 mui-text-center qrpay-top mbottom10 pbottom0">
+		<span class="c999">订单金额（元）</span>
+		<div class="numf tbiger" style="line-height: 50px;">{{if orderAmount}} {{ orderAmount | currencyFormat}}{{else}}0.00{{/if}}</div>
+		<div class="mui-text-left ptop10 pbottom10 border-bottom mtop10">
+			<span class="c999">订单编号</span> <span class="fr">{{orderNo}}</span>
+			<div class="clear"></div>
+		</div>
+		<div class="mui-text-left ptop10 pbottom10 border-bottom">
+			<span class="c999">供应商</span> <span class="fr">万事达（中南）</span>
+			<div class="clear"></div>
+		</div>
+	</div>
+	<div class="bg-white p10">
+		<div class="ptop6 pbottom6">支付方式</div>
+		<div class="border-bottom ptop10 pbottom10" {{if busType=='22'}}style="display:none"{{/if}}>
+			<div class="fl mtop10 pright10">
+				<img src="../../images/quick-order/yue-pay.png" width="20" height="20">
+			</div>
+			<div class="fl">
+				五号越付<span class="yf-btn mleft10">推荐</span><br>
+				<span class="c999 t13">可用余额{{if account.remainCredit}} {{ account.remainCredit | currencyFormat}}{{else}}0.00{{/if}}元</span>
+
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" tapmode href="javascript:creditPay()">确认支付</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom ptop10 pbottom10">
+			<div class="fl mtop10 pright10">
+				<img src="../../images/quick-order/wx-pay.png" width="20" height="20">
+			</div>
+			<div class="fl">
+				微信支付<br>
+				<span class="c999 t13">支持信用卡支付</span>
+
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" href="javascript:wxPay()">前往支付</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="border-bottom ptop10 pbottom10">
+			<div class="fl mtop6 pright10">
+				<img src="../../images/quick-order/jd-pay.png" width="20" height="20">
+			</div>
+			<div class="fl mtop6">
+				货到付款
+			</div>
+			<div class="fr">
+				<a class="mui-btn btn-orange-o qrpay-btn" href="###">货到付款</a>
+			</div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</script>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery.min.js"></script>
+<script type="text/javascript" src="../../script/template.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+       
+       template.helper('currencyFormat', formatCurrency );
+       var pageParam = api.pageParam;
+    
+       var param = {}
+	    param.orderNo = pageParam.orderNo;
+	    param.serviceParam = pageParam.serviceParam;//JSON.stringify([{"id":10920,"amount":30,"billNo":"0017121000004","feeInfo":0}]);
+	    window.orderInfo = {};
+	    orderInfo.serviceName = pageParam.serviceName;
+	    orderInfo.serviceParam = param.serviceParam;
+	    orderInfo.busType = pageParam.busType;
+       ajax("bi/app/OrgAccount",JSON.stringify(param),null,null,function(d){
+           orderInfo.orderAmount = d.orderAmount;
+           orderInfo.orderNo = d.orderNo;
+           orderInfo.orgId = d.account.id;
+           orderInfo.account = d.account;
+
+           var sHtml=template("tplSuccess",orderInfo);
+           $api.html($api.byId("mui-content"),sHtml);
+           api.parseTapmode();
+       });
+       
+       
+       
+       
+    }
+    
+    function creditPay(){
+        getPayCount().done(function(d){
+	    	 console.log(d);
+	    	 if(d>0){
+			    	 api.toast({
+		             msg:'订单已经完成支付,请勿重复支付'
+	             });
+	             api.closeWin();
+		    	 return;
+	    	 }else{
+	    	     var _self = orderInfo;
+	    	     var param = {
+				               
+				              "headers":{"from":"rest","Content-Type":"application/x-www-form-urlencoded"},
+				              "dataType": "text",
+				              "data" : {"values":{ orderNo: _self.orderNo, fillmoney: _self.orderAmount,
+			  			       serviceName:_self.serviceName,
+			  			       serviceParam:_self.serviceParam,
+			  			       busType:orderInfo.busType,
+			  			       payWay:"02",
+			  			    	feeType:"1",
+			  			       orgid:Number(_self.orgId)}}
+				            }
+				var url = "api/cashier/save";
+				ajax(url,param,null,null,function(ret){
+				   console.log(ret);
+				   var data = ret;
+				  			 if(data.code!=1000)
+				  			     api.toast({
+	                                   msg:data.message
+                                   });
+				  			 else{
+				  				 
+				  				 console.log(data);
+				  				 toSuccess();
+				  				 
+				  			 }
+				});           
+	    		 $.post( serverUrl + "api/cashier/save", { orderNo: _self.orderNo, fillmoney: _self.orderAmount,
+			  			       serviceName:_self.serviceName,
+			  			       serviceParam:_self.serviceParam,
+			  			       busType:orderInfo.busType,
+			  			       payWay:"02",
+			  			    	feeType:"1",
+			  			       orgid:Number(_self.orgId)
+			  			       
+		  		          })
+				  		 .done(function(data){
+				  			 data=JSON.parse(data);
+				  			 if(data.code!=1000)
+				  			     api.toast({
+	                                   msg:data.message
+                                   });
+				  			 else{
+				  				 
+				  				 console.log(data);
+				  				 toSuccess();
+				  				 
+				  			 }
+				  		 })
+				  		 .fail(function(data){
+				  			 alert(data);
+				  		 });
+		  		 
+	    		 
+	    	 }	 
+	     });
+    }
+    
+    function wxPay(){
+       this.getPayCount().done(function(d){
+    	 console.log(d);
+    	 if(d>0){
+	    	 api.toast({
+	             msg:'订单已经完成支付,请勿重复支付'
+             });
+             api.closeWin();
+	    	 return;
+    	 }else{
+    	     var user = getUserInfo();
+    	     var _self = orderInfo;
+    		 getWxPayCode({ orderNo: _self.orderNo, amount: _self.orderAmount+"",
+ 			       serviceName:_self.serviceName,
+ 			       serviceParam:_self.serviceParam,
+ 			       busType:orderInfo.busType,
+ 			       payWay:"06",
+ 			    	feeType:"1",	
+ 			    	goodsName:"用品商城",
+ 			    	invoiced:"0",
+ 			    	invoiceAmount:"0",
+ 			       orgid:Number(user.deptId),
+ 			      trade_type:"APP"})
+			 	.done(function(d){
+			 		console.log(d.prepayid);
+			 		var order = {
+			 				"appid":d.appid,
+			 				"partnerid":d.partnerid,
+			 				"prepayid":d.prepayid,
+			 				"timestamp":d.timestamp,
+			 				"noncestr":d.noncestr,
+			 				"sign":d.sign
+			 		}
+			 		
+			 		payOrder(order,function(ret, err){
+			 			if(ret && ret.status){
+					    	 getCreditPay().done(function(pay){
+					    		 console.log(pay.updateAt);
+					    		 toSuccess();
+					    		 
+					    	 });
+					    	 
+					     }else{
+					    	 //alert("ret = " + JSON.stringify(ret) + "err = " + JSON.stringify(err))
+					    	 
+					    	 if(err.code!="-2")
+					    		 error_msg("支付失败,代码("+err.code+")")
+					     }
+			 		})
+			 		
+			 	});
+    		 
+    	 }	 
+     });
+    
+    }
+    
+    function jdPay(){
+       getPayCount().done(function(d){
+			    	 console.log(d);
+			    	 if(d>0){
+				    	 api.toast({
+				             msg:'订单已经完成支付,请勿重复支付'
+			             });
+			             api.closeWin();
+				    	 return;
+			    	 }else{
+			    	       $.post( serverUrl + "api/cashier/save", { orderNo: _self.orderNo, fillmoney: _self.orderAmount,
+			  			       serviceName:_self.serviceName,
+			  			       serviceParam:_self.serviceParam,
+			  			       busType:orderInfo.busType,
+			  			       payWay:"07",
+			  			    	feeType:"1",
+			  			       orgid:Number(_self.orgId)
+			  			       
+		  		          })
+				  		 .done(function(data){
+				  			 data=JSON.parse(data);
+				  			 if(data.code!=1000)
+				  			     api.toast({
+	                                   msg:data.message
+                                   });
+				  			 else{
+				  				 
+				  				 console.log(data);
+				  				 toSuccess();
+				  				 
+				  			 }
+				  		 })
+				  		 .fail(function(data){
+				  			 alert(data);
+				  		 });
+			    		 
+			    	 }	 
+			     });
+    }
+    
+    function toSuccess(){
+        api.openFrame({
+	        name: 'paySuccess',
+	        url: './jiaoyi-result.html',
+	        pageParam : {orderAmount:orderInfo.orderAmount}
+        });
+    
+    }
+    
+    function getWxPayCode(param){
+        var url = "/bi/getWxPayCode";
+        var dtd = $.Deferred();
+        ajax(url,JSON.stringify(param),null,null,function(data){
+                
+                dtd.resolve(data);
+
+
+        });
+        return dtd;
+    }
+    
+    function getPayCount(){
+        var url = "bi/Fin.FCreditPayService/count"
+		var dtd = $.Deferred();
+		ajax(url,"{\"orderNo\":\""+this.orderNo+"\",\"statuses\":\"1\"}",null,null,function(d){
+				dtd.resolve(d);
+
+
+		});
+		return dtd;	
+    }
+    
+    window.payOrder = function(obj,callback){
+	    	
+	    	
+    	var wxPay = api.require("wxPay");
+    	
+    	
+		wxPay.payOrder({
+			"apiKey":obj.appid,
+		    "mchId": obj.partnerid,
+		    "orderId": obj.prepayid,
+		    "package": "Sign=WXPay",
+		    "timeStamp": obj.timestamp,
+		    "nonceStr": obj.noncestr,
+		    "sign": obj.sign
+		}, function(ret, err){
+		     callback(ret,err);
+		});
+    	
+    }
+    
+</script>
+</html>

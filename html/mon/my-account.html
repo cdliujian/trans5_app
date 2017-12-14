@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<base href="./../../" />
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+/>
+<link href="css/mui.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/app.css" />
+<link href="css/mui.picker.css" rel="stylesheet" />
+<link href="css/mui.poppicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/public.css" />
+<link rel="stylesheet" href="css/main.css" />
+<title>我的账单</title>
+
+</head>
+<body class="bg-f8f8f8 t14">
+	<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000; height: 46px;">
+		<div class="mui-title pright10">我的账单</div>
+	</header>
+	<div class="mui-content pbottom49">
+		<div class="bg-orange p10 white mui-text-center">
+			<div class="ptop10 pbottom10 myaccount-top">
+				可用额度(元)<br> <span class="tbiger ptop10 numf" id="RemainCredit">0.00</span>
+			</div>
+			<div class="mui-col-xs-6 fl pbottom10">
+				总额度(元)<span class="t20 numf mui-block ptop6" id="FixedLimit">0.00</span>
+			</div>
+			<div class="mui-col-xs-6 fl pbottom10">
+				溢缴金额(元)<span class="t20 numf mui-block ptop6" id="Overflowmoney">0.00</span>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="p10 border-bottom bg-white">
+			<div class="">
+				最近待还(元)<span class="fr orange t13" id="paydate"></span>
+			</div>
+			<div class="ptop10">
+				<span class="orange t20 ptop10 fl" id="lastPay">0.00</span>
+				<div class="fr myaccount-btn">
+					<a href="javascript:payBack()" class="mui-btn btn-orange mright10" id="payBt" style="display: none;">还款</a> <a href="javascript:billList()"
+						class="mui-btn btn-orange-o" id="lookLastBill"
+					style="display: none;" >查看</a>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="p10 border-bottom bg-white mbottom10">
+			<div class="">
+				下月应还(元)<span class="fr c999 t13">未出账</span>
+			</div>
+			<div class="ptop10">
+				<span class="orange t20 ptop10 fl" id="nexMonthPay">0.00</span>
+				<div class="fr myaccount-btn">
+					<a href="javascript:tqpayBack()" class="mui-btn btn-orange mright10" id=tqpayBt style="display: none;">提前还款</a> <a
+						href="javascript:javascript:void(0)" class="mui-btn btn-orange-o"
+					id="lookNextBill" style="display: none;">查看</a>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="bg-white">
+			<div id="billList"></div>
+
+
+			<div class="mui-text-center p10">
+				<a href="javascript:loadData()" class="am-btn-link" id="more">查看更多账单</a>
+			</div>
+		</div>
+	</div>
+
+	<nav class="mui-bar mui-bar-tab t12">
+		<a class="mui-tab-item" href="#"> <span class="mui-block"><img
+				src="images/index/gys-icon55.png" width="24"
+			> </span> <span class="mui-tab-label c333">首页</span>
+		</a> <a class="mui-tab-item" href="#"> <span class="mui-block"><img
+				src="images/index/gys-icon22.png" width="24"
+			> </span> <span class="mui-tab-label c333">供应商</span>
+		</a> <a class="mui-tab-item mui-active" href="#"> <span class="mui-block"><img
+				src="images/index/gys-icon77.png" width="24"
+			> </span> <span class="mui-tab-label">账单</span>
+		</a> <a class="mui-tab-item" style="position: relative;" href="#"> <span
+			class="index-listli-tips bottom-tips"
+		>20</span> <span class="mui-block"><img src="images/index/gys-icon11.png" width="24"> </span> <span
+			class="mui-tab-label c333"
+		>我的</span>
+		</a>
+	</nav>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+
+
+<script id="tpBillList" type="text/html">
+{{each list as data i}}
+				<div class="p10 border-bottom">
+					<div class="fl">
+						{{data.billNo.replace(pattern, '$2')}}月账单<br>
+						<span class="numf c666">{{data.billAmount.toFixed(2)}}</span>
+					</div>
+					<div class="fr">
+
+						{{if data.isFinish == 0}}<span>未还清</span>{{/if}}
+						{{if  data.isFinish == 1}}<span>已还清</span>{{/if}}
+
+						<a href="javascript:lookBill({{data.id}},{{data.billNo.replace(pattern, '$2')}})"><span class="mui-icon mui-icon-arrowright t14 c999"></span></a>
+
+					</div>
+					<div class="clear"></div>
+				</div>
+{{/each}}
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+//获取每页显示记录数
+var iDisplayLength=5;
+var nextMainId=0;//查看未出账单，即下月的账单情况传的id
+var lastMainId=0;//查看上个月账单传的id
+var times=0;//保存分页功能翻页的次数
+
+//以下为提前还款保存的三个参数
+var tqamount=0;
+var tqorderNo=0;
+var tqmainId=0;
+//以下为还款的三个参数
+var amount=0;//金额
+var orderNo=0;//账单号
+var mainId=0;//账单主键
+
+
+
+
+apiready = function(){
+   pageSizeApp(function(data) {
+  		 iDisplayLength =data;
+   });
+
+   $("#lookNextBill").click(function(){
+	   lookMonthBill();
+	});
+
+
+   initAccountInfo();
+   getPayTotalMoney();
+   loadData();
+ };
+
+ function lookMonthBill() {
+
+		 api.openWin({
+			name : "bill",
+			url : "bill.html",
+			pageParam : {
+				MainId : nextMainId,
+				month:0
+			}
+		});
+
+	}
+function lookBill(main,month){
+	 api.openWin({
+			name : "bill",
+			url : "bill.html",
+			pageParam : {
+				MainId : main,
+				month:month
+
+			}
+		});
+
+}
+
+
+function billList(){
+	 api.openWin({
+			name : "billList",
+			url : "billList.html",
+
+		});
+
+}
+
+//提前还款
+function tqpayBack(){
+
+	dopay(tqamount,tqorderNo,tqmainId);
+}
+
+
+
+//还款
+function payBack(){
+	dopay(amount,orderNo,mainId);
+}
+
+//执行还款到支付页面
+function dopay(amount,orderNo,mainId){
+	 api.openWin({
+			name : "payBack",
+			url : "payback.html",
+			pageParam : {
+				amount : amount,
+				orderNo:orderNo,
+				mainId:mainId
+			}
+		});
+}
+
+
+//初始化账户的基本信息（包括越付额度，溢缴金额等信息）
+function initAccountInfo() {
+
+
+  $.ajax({ url: serverUrl+"bi/MonYfBillAction/iniMonthInfo",
+           headers: {
+                   session_id:guid(),from:"rest",
+                  },
+             method:"POST",
+           contentType : 'application/json'
+      }).success(function(data){
+        if(data) {
+      				var ret = JSON.parse(data);
+      				if (ret.code != 1000) {
+      					api.toast({"msg":ret.message});
+      					return;
+      				}
+            if(ret.data == null) {
+    					return;
+    				}
+          var d=ret.data;
+            if(d!=null) {
+              var obj = d[0];
+                if (obj) {
+                    var RemainCredit = obj.RemainCredit == null ? 0.00 : obj.RemainCredit;//
+                  RemainCredit.toFixed(2);
+                  $("#RemainCredit").html(RemainCredit);
+
+                  var FixedLimit = obj.FixedLimit == null ? 0.00 : obj.FixedLimit;
+                  FixedLimit.toFixed(2);
+                  $("#FixedLimit").html(FixedLimit);//    初始化总额度和可用额度
+
+                  Overflowmoney=obj.monDeptOverflowmoney==null?0.00:obj.monDeptOverflowmoney.money;
+                  Overflowmoney.toFixed(2);
+                  $("#Overflowmoney").html(Overflowmoney);
+
+                    if (obj.BILL_NO == undefined) {//本月账单还没有出的情况  就是没有账单号只有账户越付信息的情况
+
+
+                    } else {
+
+
+                      $("#nexMonthPay").html(obj.BILL_AMOUNT);
+                      nextMainId=obj.ID;
+
+                      //开始保存提前还款的三个必须参数
+                      tqamount=obj.BILL_AMOUNT;
+                      tqmainId=obj.ID;
+                      tqorderNo=obj.BILL_NO;
+
+                     	//如果这三个参数没有赋值上则隐藏提前还款按钮
+                      if(tqamount!=0 && tqmainId!=0 && tqorderNo!=0){
+
+	                      $("#tqpayBt").show();
+                      }
+                      if(nextMainId!=0){
+
+	                      $("#lookNextBill").show();
+                      }
+
+                    //  overMoneyId=obj.monDeptOverflowmoney==null?null:obj.monDeptOverflowmoney.id;
+                    }
+
+                }
+            }
+          }
+
+      });
+}
+//获得本月还款的总金额
+function getPayTotalMoney(){
+  $.ajax({ url: serverUrl+"bi/MonYfBillAction/getLastPayInfo",
+           headers: {
+                   session_id:guid(),from:"rest",
+                  },
+             method:"POST",
+           contentType : 'application/json'
+      }).success(function(data){
+        if(data) {
+              var ret = JSON.parse(data);
+              if (ret.code != 1000) {
+                api.toast({"msg":ret.message});
+                return;
+              }
+            if(ret.data == null) {
+              return;
+            }
+            var d=ret.data;
+            if(d.length>0){
+
+            var lastPay = 0;
+            d.forEach(function (obj) {
+		          lastPay += obj.NOT_REPLY;
+		          orderNo=obj.BILL_NO;
+		          mainId=obj.ID;
+            });
+            lastPay=lastPay.toFixed(2);
+              $("#lastPay").html(lastPay);
+              var paydate=d[0].REPLY_DATE;
+                $("#paydate").html("最后还款日"+paydate.replace("-","年").replace("-","月")+"日");
+
+                amount=lastPay;
+                if(orderNo!=0 && mainId!=0 && amount!=0){
+
+               	 	$("#payBt").show();
+                }
+
+                $("#lookLastBill").show();
+            }
+          }
+      });
+}
+
+//账单列表
+function loadData(){
+	var startRow=times * iDisplayLength
+	var m = new Object();
+	var aoData = [];
+	aoData.push({"name":"iDisplayLength","value":iDisplayLength});
+	aoData.push({"name":"iDisplayStart","value":startRow});
+
+	$.ajax({ url: serverUrl+"bi/MonYfBillAction/queryResult",
+	     headers: {
+	               	session_id:guid(),from:"rest",
+
+	     },
+		 method:"POST",
+		 contentType : 'application/json',
+	     data:JSON.stringify({"queryparams":aoData})
+	   }).success(function(data){
+
+		   if(data) {
+	           	var ret = JSON.parse(data);
+	            if (ret.code != 1000) {
+	              api.toast({"msg":ret.message});
+	              return;
+	            }
+		        if(ret.data == null) {
+		            return;
+		        }
+	            var d=ret.data.aaData;
+				if(d.length==0){
+					$("#more").html("没有更多了...");
+					return;
+				}
+            var pattern = /(\d{4})(\d{2})/;
+	            var html=template("tpBillList", {"list" : d,"pattern":pattern});
+				$("#billList").append(html);
+				times=+1;
+				//$("#more").html("查看更多账单");
+	        }
+	    });
+}
+
+
+
+</script>
+</html>

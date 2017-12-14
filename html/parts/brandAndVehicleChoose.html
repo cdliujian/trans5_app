@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+    <base href="./../../" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+	<title>精友定型</title>
+</head>
+<body class="bg-thingray t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		精友定型
+	</div>
+</header>
+<div class="mui-content">
+	<div class="bg-white p10 jydx-top">
+		<img src="" width="20" id="chooseImg">
+		<span id="chooseBrand"></span>
+	</div>
+	<div class="p10 ptop6 pbottom6">选择车型</div>
+	<div class="bg-white">
+		<ul class="jydx-list" id="vehicleUL">
+		</ul>
+	</div>
+</div>
+
+<script id="tplVehicleTable" type="text/html">
+	{{each vehicleList as vehicle i}} 
+			<li><a href="javascript:void(0);" onclick="setBrand('{{brandName}}', '{{logo}}', '{{brandId}}', '{{vehicle.vehicleName}}')">{{vehicle.vehicleName}}</a> </li>
+	{{/each}}
+</script>
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var vin = "", jyFlag = false;
+	var vehicleList;
+	var selectBrandId = "", brandCode = "";
+	var vehicleId = "";
+	var modelName = "";
+	apiready = function(){
+		vin = api.pageParam.vin;
+		
+		initJyBrand();
+	};
+
+	function close() {
+		api.closeWin({name: "brandAndVehicleChoosePage"});
+	}
+	
+	//初始化精友定型品牌
+	function initJyBrand() {
+		logo = "", brandName = "";
+				
+		$.ajax({ url: serverUrl+"bi/JyAction/qeuryVin/" + vin,
+				 headers: {
+					       session_id:guid(),from:"rest",			               
+					      },
+			  	 method:"POST",
+				 contentType : 'application/json'
+		}).success(function(data){	
+			if(data) {
+				var ret = JSON.parse(data);
+				if (ret.code != 1000) {
+					api.toast({"msg":ret.message});
+					return;
+				} 
+				if(ret.data == null) {
+					api.toast({"msg":"无品牌车型数据！"});		
+					setTimeout(function(){			
+						var jsFun = "setStyleByJyPartsSearch(false)";
+						api.execScript({
+							name: "queryMainPage",
+							script: jsFun
+						});
+							
+						api.closeWin();
+                    },3000);
+				}	
+				var d = eval("("+ret.data+")");
+				
+				if(d["code"] != "000000") {
+					//执行结果: 失败
+					api.toast({"msg":"查询不到车型，请确认车架号是否正确！"});	
+					setTimeout(function(){			
+						var jsFun = "setStyleByJyPartsSearch(false)";
+						api.execScript({
+							name: "queryMainPage",
+							script: jsFun
+						});
+							
+						api.closeWin();
+                    },3000);
+				}	
+				
+				var result = d["result"];
+				vehicleList = result["vehicleList"];
+				var brand = vehicleList[0];		
+				selectBrandId = brand.brandId;
+				brandCode = brand.brandCode;
+				brandName = brand.brandName;
+						
+				$.ajax({ url: serverUrl+"bi/BiCarBrandJyAction/getBrand",
+						 headers: {
+							       session_id:guid(),from:"rest",			               
+							      },
+					  	 method:"POST",
+						 contentType : 'application/json',
+					  	 data:JSON.stringify({"jyBrandId":brand.brandId})
+				}).success(function(data1){	
+					if(data1) {
+						var ret1 = JSON.parse(data1);
+						if (ret1.code != 1000) {
+							api.toast({"msg":ret1.message});	
+						   	var vehicleHtml=template("tplVehicleTable", {"vehicleList" : vehicleList, "brandName" : brandName, "logo" : logo, "brandId" : ""});
+							$("#vehicleUL").html(vehicleHtml); 
+							return;
+						} 
+						if(ret1.data == null) {	
+						   	var vehicleHtml=template("tplVehicleTable", {"vehicleList" : vehicleList, "brandName" : brandName, "logo" : logo, "brandId" : ""});
+							$("#vehicleUL").html(vehicleHtml); 
+							return;
+						}
+						
+						//console.log(ret1.data.pictureAddress);
+						logo = ret1.data.pictureAddress;
+						brandName = ret1.data.brandName;
+						//console.log("logo---------->"+logo+",brandName----->"+brandName);
+						$("#chooseImg").attr("src", logo);
+						$("#chooseBrand").html("<b>" + brandName + "</b>");		
+					   	var vehicleHtml=template("tplVehicleTable", {"vehicleList" : vehicleList, "brandName" : brandName, "logo" : logo, "brandId" : ret1.data.id});
+						$("#vehicleUL").html(vehicleHtml); 
+					}
+				});
+				
+				jyFlag = true;		
+				//console.log(logo);	
+				//console.log(brandName);	
+			}
+		});
+	}
+	
+	function setBrand(brandName, logo, brandId, carModel) {
+		var jsFun = "selectBrand('" + brandName + "','" + logo + "','" + brandId + "', '" + brandCode + "','" + vehicleId + "','" + carModel + "')";
+		api.execScript({
+			name: "queryMainPage",
+			script: jsFun
+		});
+		api.closeWin();
+		
+		var jsFun1 = "setStyleByJyPartsSearch(true)";
+		api.execScript({
+			name: "queryMainPage",
+			script: jsFun1
+		});
+		api.closeWin();
+	}
+</script>
+</html>

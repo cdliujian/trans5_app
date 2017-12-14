@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head lang="en">
+<base href="./../../" />
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
+/>
+<link href="css/mui.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="css/app.css" />
+<link href="css/mui.picker.css" rel="stylesheet" />
+<link href="css/mui.poppicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/public.css" />
+<link rel="stylesheet" href="css/main.css" />
+<style>
+.mui-control-content {
+	background-color: white;
+	min-height: 815px;
+}
+</style>
+<title>我的账单</title>
+
+</head>
+<body class="bg-f8f8f8 t14">
+	<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000; height: 46px;">
+		<a class="mui-icon mui-icon-left-nav c333" href="javascript: close()"></a>
+		<div class="mui-title pright10" id="month">下月未出账单</div>
+	</header>
+	<div class="mui-content">
+		<div class="bg-orange p10 white mui-text-center">
+			<div class="ptop10 pbottom10 myaccount-top">
+				可用额度(元)<br> <span class="tbiger ptop10 numf" id="RemainCredit">0.00</span>
+			</div>
+			<div class="mui-col-xs-6 fl pbottom10">
+				总额度(元)<span class="t20 numf mui-block ptop6" id="FixedLimit">0.00</span>
+			</div>
+			<div class="mui-col-xs-6 fl pbottom10">
+				溢缴金额(元)<span class="t20 numf mui-block ptop6" id="Overflowmoney">0.00</span>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div id="slider" class="mui-slider bill-slider">
+			<div id="sliderSegmentedControl"
+				class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted bg-white"
+			>
+				<a class="mui-control-item mui-active" href="#item1mobile"> 消费明细 </a> <a
+					class="mui-control-item" href="#item2mobile"
+				> 还款明细 </a> <a class="mui-control-item" href="#item3mobile"> 逾期利息 </a>
+			</div>
+			<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4"></div>
+			<div class="mui-slider-group mtop10 t13">
+				<div id="item1mobile" class="mui-slider-item mui-control-content bg-f8f8f8  mui-active">
+					<div id="scroll1" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div id="tab1"></div>
+
+							<div class="mui-text-center p10">
+								<a href="javascript:queryPage()" class="am-btn-link" id="more">查看更多账单</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="item2mobile" class="mui-slider-item mui-control-content bg-f8f8f8">
+					<div id="scroll2" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div id="tab2"></div>
+
+
+
+							<div class="mui-text-center p10">
+								<a href="javascript:queryPage()" class="am-btn-link" id="more2">查看更多账单</a>
+							</div>
+
+
+						</div>
+					</div>
+
+				</div>
+				<div id="item3mobile" class="mui-slider-item mui-control-content bg-f8f8f8">
+					<div id="scroll3" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div id="tab3"></div>
+
+
+
+							<div class="mui-text-center p10">
+								<a href="javascript:queryPage()" class="am-btn-link" id="more3">查看更多账单</a>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="script/mui.min.js"></script>
+	<script type="text/javascript" src="script/api.js"></script>
+	<script type="text/javascript" src="script/jquery.min.js"></script>
+	<script type="text/javascript" src="script/common.js"></script>
+	<script type="text/javascript" src="script/template.js"></script>
+
+	<script id="tpConsumption" type="text/html">
+{{each list as obj i}}
+				<div class="bg-white p10 mbottom10">
+						<div class="border-bottom pbottom10">订单号{{ obj.billCode}}</div>
+							<div class="ptop10">
+								 <div class="fl">
+										{{obj.cusDeptName}}<br><span class="t12 c999">{{timeStamp2String(obj.upTime)}}</span>
+								 </div>
+								 <div class="fr numf t14 ptop6">{{obj.upAmount}}</div>
+								 <div class="clear"></div>
+						 </div>
+				</div>
+{{/each}}
+</script>
+
+	<script id="tpRePayment" type="text/html">
+{{each list as obj i}}
+							<div class="bg-white p10 mbottom10">
+									<div class="bill-list">
+										<div class="fl c666">还款金额</div>
+										<span class="fr">{{obj.money}}</span>
+									</div>
+									<div class="bill-list">
+										<div class="fl c666">还款单号</div>
+										<span class="fr">{{obj.billNo}}</span>
+									</div>
+									<div class="bill-list">
+										<div class="fl c666">还款时间</div>
+										<span class="fr">{{timeStamp2String(obj.createTime)}}</span>
+									</div>
+									<div class="bill-list">
+										<div class="fl c666">还款方式</div>
+										<span class="fr">微信支付</span>
+									</div>
+									<div class="bill-list">
+										<div class="fl c666">交易说明</div>
+										{{if obj.memo == null}}<span class="fr"></span>{{/if}}
+									{{if obj.memo!=null}}<span class="fr">{{obj.memo}}</span>{{/if}}
+									</div>
+									<div class="clear"></div>
+								</div>
+								<div class="bg-white p10 mbottom10">
+									<div class="bill-list">
+{{/each}}
+</script>
+	<script id="tpInterest" type="text/html">
+{{each list as obj i}}
+							<div class="bg-white p10 mbottom10">
+								<div class="ptop10">
+									<div class="fl">
+										逾期金额 {{obj.money}}<br>
+										<span class="t12 c999">{{timeStamp2String(obj.createTime)}}</span>
+									</div>
+									<div class="fr numf t14 ptop6">{{obj.interest}}</div>
+									<div class="clear"></div>
+								</div>
+							</div>
+
+{{/each}}
+</script>
+
+
+	<script>
+		//获取每页显示记录数
+		var iDisplayLength = 5;
+		var aoData = [];
+		var times = 0;
+		var MainId = 0;
+		var month = 0;
+
+		apiready = function() {
+			pageSizeApp(function(data) {
+				iDisplayLength = data;
+			});
+			MainId = api.pageParam.MainId;
+			month = api.pageParam.month;
+			if(month!=0){
+
+				$("#month").html(month + "月账单");
+			}
+			initAccountInfo();
+			queryPage();
+			mui.init({
+				swipeBack : false
+			});
+			(function($) {
+				$('.mui-scroll-wrapper').scroll({
+					indicators : true
+				//是否显示滚动条
+				});
+
+			})(mui);
+		};
+
+		function close() {
+			api.closeWin();
+		}
+
+		//初始化账户的基本信息（包括越付额度，溢缴金额等信息）
+		function initAccountInfo() {
+
+			$.ajax({
+						url : serverUrl + "bi/MonYfBillAction/iniMonthInfo",
+						headers : {
+							session_id : guid(),
+							from : "rest",
+						},
+						method : "POST",
+						contentType : 'application/json'
+					})
+					.success(
+							function(data) {
+								if (data) {
+									var ret = JSON.parse(data);
+									if (ret.code != 1000) {
+										api.toast({
+											"msg" : ret.message
+										});
+										return;
+									}
+									if (ret.data == null) {
+										return;
+									}
+									var d = ret.data;
+									if (d != null) {
+
+										var obj = d[0];
+										if (obj) {
+											var RemainCredit = obj.RemainCredit == null ? 0.00
+													: obj.RemainCredit;//
+											RemainCredit.toFixed(2);
+											$("#RemainCredit").html(
+													RemainCredit);
+
+											var FixedLimit = obj.FixedLimit == null ? 0.00
+													: obj.FixedLimit;
+											FixedLimit.toFixed(2);
+											$("#FixedLimit").html(FixedLimit);//    初始化总额度和可用额度
+
+											Overflowmoney = obj.monDeptOverflowmoney == null ? 0.00
+													: obj.monDeptOverflowmoney.money;
+											Overflowmoney.toFixed(2);
+											$("#Overflowmoney").html(
+													Overflowmoney);
+										}
+									}
+								}
+
+							});
+		}
+
+		function queryPage() {
+			var m = new Object();
+			m.mainId = MainId;
+			var startRow = times * iDisplayLength
+			aoData.push({
+				"name" : "iDisplayLength",
+				"value" : iDisplayLength
+			});
+			aoData.push({
+				"name" : "param",
+				"value" : m
+			});
+			aoData.push({
+				"name" : "iDisplayStart",
+				"value" : startRow
+			});
+			getConsumption();
+			getRePayment();
+			getInterest();
+		}
+
+		//获取消费明细
+		function getConsumption() {
+
+			$.ajax({
+				url : serverUrl + "bi/MonYfBillDetailAction/queryByMainId",
+				headers : {
+					session_id : guid(),
+					from : "rest",
+
+				},
+				method : "POST",
+				contentType : 'application/json',
+				data : JSON.stringify({
+					"queryparams" : aoData
+				})
+			}).success(function(data) {
+
+				if (data) {
+					var ret = JSON.parse(data);
+					if (ret.code != 1000) {
+						api.toast({
+							"msg" : ret.message
+						});
+						return;
+					}
+					if (ret.data == null) {
+						return;
+					}
+					var d = ret.data.aaData;
+					if (d.length == 0) {
+						$("#more").html("没有更多了...");
+						return;
+					}
+					template.helper("timeStamp2String", timeStamp2String);
+					var html = template("tpConsumption", {
+						"list" : d
+					});
+					$("#tab1").append(html);
+					times = +1;
+				}
+			});
+		}
+
+		//获取还款流水
+		function getRePayment() {
+
+			$.ajax({
+				url : serverUrl + "bi/MonYfReturnAction/queryByMainId",
+				headers : {
+					session_id : guid(),
+					from : "rest",
+
+				},
+				method : "POST",
+				contentType : 'application/json',
+				data : JSON.stringify({
+					"queryparams" : aoData
+				})
+			}).success(function(data) {
+
+				if (data) {
+					var ret = JSON.parse(data);
+					if (ret.code != 1000) {
+						api.toast({
+							"msg" : ret.message
+						});
+						return;
+					}
+					if (ret.data == null) {
+						return;
+					}
+					var d = ret.data.aaData;
+					if (d.length == 0) {
+						$("#more2").html("没有更多了...");
+						return;
+					}
+					template.helper("timeStamp2String", timeStamp2String);
+					var html = template("tpRePayment", {
+						"list" : d
+					});
+					$("#tab2").append(html);
+				}
+			});
+		}
+
+		function iniPayType() {
+			var data = ajaxSync("bi/dic/category/FIN_PAY_WAY", null);
+			$.each(data, function(index, item) {
+				//map.[item.name+""]=item.desc+"";
+				var key = item.name;
+				var value = item.desc;
+				map[key] = value;
+			});
+		}
+
+		// 获取逾期利息
+		function getInterest() {
+			$.ajax({
+				url : serverUrl + "bi/MonYfInterestAction/queryByMainId",
+				headers : {
+					session_id : guid(),
+					from : "rest",
+
+				},
+				method : "POST",
+				contentType : 'application/json',
+				data : JSON.stringify({
+					"queryparams" : aoData
+				})
+			}).success(function(data) {
+
+				if (data) {
+					var ret = JSON.parse(data);
+					if (ret.code != 1000) {
+						api.toast({
+							"msg" : ret.message
+						});
+						return;
+					}
+					if (ret.data == null) {
+						return;
+					}
+					var d = ret.data.aaData;
+					if (d.length == 0) {
+						$("#more3").html("没有更多了...");
+						return;
+					}
+					template.helper("timeStamp2String", timeStamp2String);
+					var html = template("tpInterest", {
+						"list" : d
+					});
+					$("#tab3").append(html);
+				}
+			});
+		}
+	</script>
+</body>
+</html>

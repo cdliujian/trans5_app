@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+  <!-- <link rel="stylesheet" href="css/amazeui.min.css"> -->
+	<style>
+		.mui-plus .plus{
+			display: inline;
+		}
+
+		.plus{
+			display: none;
+		}
+
+		#topPopover {
+			position: fixed;
+			top: 16px;
+			right: 6px;
+		}
+		#topPopover .mui-popover-arrow {
+			left: auto;
+			right: 6px;
+		}
+		p {
+			text-indent: 22px;
+		}
+		span.mui-icon {
+			font-size: 14px;
+			color: #007aff;
+			margin-left: -15px;
+			padding-right: 10px;
+		}
+		.mui-popover {
+			height: 500px;
+			transition: opacity 1s;
+		}
+		.mui-popover.mui-active{opacity: 1;transition: height 1s;}
+		.mui-content {
+			padding: 10px;
+		}
+	</style>
+	<title>购物车</title>
+</head>
+<body class="bg-f8f8f8">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" id="closeWin" ></a>
+
+  <div class="mui-title" style="padding-right:50px;">
+		<div class="mui-input-row mui-search sc-search" id="inputSearchHtml">
+			<input type="search" class="mui-input-clear" placeholder="用品名称">
+		</div>
+	</div>
+	<a class="mui-pull-right sc-gwc-btn" onclick="toShoppingCart()"><span>购物车<i class="" id="inCartAmount">0</i></span>  </a>
+
+	<!-- <div class="mui-title pright10">
+		<div class="mui-input-row mui-search sc-search" id="inputSearchHtml">
+		</div>
+	</div> -->
+	<!--<button class="mui-pull-right mui-btn-link c333 t14" id="confirmBtn">查询</button>-->
+</header>
+
+<div class="mtop49">
+	<div class="bg-white mbottom10 t13 sc-menu" style="position: relative;">
+		<div class="sc-list-top">
+			<div class="sc-list-l sc-truncate" id="topCategory">
+
+			</div>
+			<a href="#middlePopover" id="sc-more" class="sc-list-more c333">更多</a>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+	<div class="bg-white t13 border-bottom-f4 sc-menu2" >
+		<div class="sc-list-top2">
+			<div class="sc-list-l2 pright10 ">
+				<div class="sc-truncate">
+					<a class="" href="#menu-btn2"><span id="categoryNameSpan">油液类/全部</span></a>
+					<a href="#menu-btn3"><span id="brandsNameSpan">品牌</span></a>
+					<a href="#menu-btn4"><span id="modelNameSpan">型号</span></a>
+				</div>
+			</div>
+			<a href="#menu-btn2-sx" class="sc-list-shuai">筛选</a>
+		</div>
+
+		<div class="clear"></div>
+	</div>
+	<div class="mbottom10" style="margin-top: 79px;" id="goodsListId">
+	</div>
+  <div class="clear"></div>
+  <a class="mui-block mui-text-center am-btn-link p10 myxjd-more t13" onclick="pullMore()" id="pullMoreHtml">点击查看更多</a>
+</div>
+<!-- <div class="sc-footer bg-white">
+	<div class="price t13 am-fl p10"><span class="t13 c333"> 合计</span>  ￥<span class="t16" id="inCartTotal">1999.00</span> </div>
+	<div class="fr sc-footer-rbtn">
+		<a class="sc-gwc-btn" onclick="toShoppingCart()"><span>购物车<i class="" id="inCartAmount"></i></span>  </a>
+	</div>
+</div> -->
+
+<!--更多下拉框-->
+<div id="middlePopover" class="mui-popover sc-list11">
+	<div class="mui-popover-arrow"></div>
+	<div class="mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<ul class="mui-table-view t13" id="categoryMore">
+			</ul>
+		</div>
+	</div>
+
+</div>
+<!--筛选下拉框-->
+<div id="menu-btn2" class="mui-popover sc-list11">
+	<div class="mui-popover-arrow"></div>
+	<div class="mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<ul class="mui-table-view t13" id="twoCategory">
+        <li class='mui-table-view-cell'>暂无该商品二级分类</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="menu-btn3" class="mui-popover sc-list11">
+	<div class="mui-popover-arrow"></div>
+	<div class="mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<ul class="mui-table-view t13" id="selBrands">
+          <li class='mui-table-view-cell'>暂无该商品品牌</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="menu-btn4" class="mui-popover sc-list11">
+	<div class="mui-popover-arrow"></div>
+	<div class="mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<ul class="mui-table-view t13" id="selModel">
+        <li class='mui-table-view-cell'>暂无该商品品牌型号</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!--筛选下拉框-->
+<div id="menu-btn2-sx" class="mui-popover sc-list11 border-top-f1">
+	<div class="mui-popover-arrow"></div>
+	<div class="mui-scroll-wrapper">
+		<div class="mui-scroll t13 p10" style="padding-bottom: 46px;" id="selParam">
+		</div>
+		<div class="sc-list-btn mui-text-center t13 border-top-f1">
+			<a class="c333 mui-col-xs-6 fl" style="border-right: 1px solid #f1f1f1" onclick="clearSelParam()">重置</a>
+			<a class="c333 mui-col-xs-6 fl" onclick="submitSelParam()">完成</a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/amazeui.min.js"></script>
+<script type="text/javascript" src="script/amazeui-message-pop.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<!--商品列表模板  -->
+<script id="mallGoodsContent" type="text/html">
+ {{each aaData as value i}}
+  <div class="mui-col-xs-6 p0 mbottom6 fl" onclick="toGoodsDetial({{value.id}})">
+  			<div class="bg-white sc-list">
+  				<div class="sc-list-img">
+            {{if value.goods_main_pic }}
+  					<img src="{{value.goods_main_pic}}" width="150">
+            {{else}}
+            <img src="images/mall/goodsDefault.jpg" width="150">
+            {{/if}}
+  				</div>
+  				<div class="c333">
+  					<h5 class="fw-nomal t13 mbottom6 sc-truncate c333">{{value.title}}</h5>
+  					<div class="sclist-p">
+  						<div class="price t13 sc-truncate" style="width: 100%;">
+  							￥<span class="t15">{{value.sellprice}}</span>
+                {{if value.isall  == 1 }}
+  							<span class="t12 c666 bg-f4f4f4 sclist-j">须按件购买：{{value.allamount}}/件</span>
+                {{/if}}
+  						</div>
+  					</div>
+  					<span class="t13 c999 sc-truncate mui-block ptop6">{{value.deptname}}</span>
+  				</div>
+  				<div class="clear"></div>
+  			</div>
+  		</div>
+ {{/each}}
+</script>
+
+<!--商品参数模板  -->
+<script id="mallParamContent" type="text/html">
+ {{each data as value i}}
+   <div class="t12 c999 pleft10">{{value.name}}</div>
+     <ul class="mui-table-view sc-table-view">
+       {{each value.values as o j}}
+         <li class="mui-table-view-cell" name="selectedParams" onclick="selectedParam(this)"><a>{{o.value}}</a></li>
+       {{/each}}
+     </ul>
+   <div class="clear"></div>
+ {{/each}}
+</script>
+
+<script type="text/javascript">
+
+var searchTxt = "";
+var searchText = "";//搜索页返回的搜索词
+var params = "";
+var currentPage = 1;
+var totalRecords = 0;
+var iDisplayLength = 30;
+var iDisplayStart = 0;
+
+apiready = function(){
+  returnSearch()
+  queryCategory();
+  getAmountInCart();
+}
+
+function returnSearch(){
+  var search = api.pageParam.searchText;
+  if(typeof(search) != "undefined" && search != ""){
+    $("#categoryNameSpan").html("分类")
+    searchText = search;
+    $("#inputSearchHtml").html('<input id="searchHtml" type="search" class="mui-input-clear" onclick="toSearch()" placeholder="'+search+'">')
+  }else{
+    $("#inputSearchHtml").html('<input id="searchHtml" type="search" class="mui-input-clear" onclick="toSearch()" placeholder="用品名称">')
+  }
+}
+
+//获取商品列表
+function ajaxMallGoodsList(){
+  var searchTxts = "";
+  if(params != ""){
+    searchTxts = (searchTxt + params);
+  }else{
+    searchTxts = searchTxt;
+  }
+  var param = {"queryparams":[
+    {"name":"iDisplayStart","value":iDisplayStart},
+    {"name":"iDisplayLength","value":iDisplayLength},
+    {"name":"param",
+      "value":{"info":searchTxts}
+    },
+  ]}
+
+  ajax("bi/MallGoodsAction/queryMallGoods",param, null, null, function(data){
+    var goodsList = $("#goodsListId");
+    if(totalRecords == 0){
+          goodsList.html("");
+    }
+    totalRecords = data.iTotalRecords;
+    $.each(data.aaData,function(j,o){
+        o.sellprice = parseFloat(o.sellprice).toFixed(2)
+        if(o.goods_main_pic !=""){
+           o.goods_main_pic = (o.goods_main_pic + "?x-oss-process=image/resize,m_pad,h_200");
+        }
+    });
+    var html = template('mallGoodsContent', data);
+    goodsList.append(html);
+  })
+}
+
+
+//获取一级商品分类
+function queryCategory(){
+  ajax("bi/Mall/queryCategoryByPid",{"pidIsNull":"1"}, null, null, function(data){
+    var topCategory = $("#topCategory");
+    var categoryMore = $("#categoryMore");
+    $.each(data,function(i,c){
+        if(i == 0){
+            queryCategory2(c.id,c.name)
+            topCategory.append("<a onclick=queryCategory2('"+c.id+"','"+c.name+"')><span>"+c.name+"</span></a>");
+            categoryMore.append("<li class='mui-table-view-cell'><a onclick=queryCategory2('"+c.id+"','"+c.name+"')>"+c.name+"</a></li>");
+        }else{
+            topCategory.append("<a onclick=queryCategory2('"+c.id+"','"+c.name+"')><span>"+c.name+"</span></a>");
+            categoryMore.append("<li class='mui-table-view-cell'><a onclick=queryCategory2('"+c.id+"','"+c.name+"')>"+c.name+"</a></li>");
+        }
+    })
+  })
+}
+//获取二级分类
+function queryCategory2(categoryId,categoryName){
+  mui('.mui-popover').popover('hide');
+  ajax("bi/Mall/queryCategoryByPid",{"pid":categoryId}, null, null, function(data){
+    var twoCategory = $("#twoCategory");
+    if(data != null){
+      twoCategory.html("");
+    }else{
+      twoCategory.html("<li class='mui-table-view-cell'>暂无该商品二级分类</li>")
+    }
+    $.each(data,function(i,c){
+        if(i == 0){
+            $("#brandsNameSpan").html("品牌");
+            $("#modelNameSpan").html("型号");
+            initBrand(c.id,c.name,categoryName)
+            twoCategory.append("<li class='mui-table-view-cell'><a onclick=initBrand('"+c.id+"','"+c.name+"','"+categoryName+"')>"+c.name+"</a></li>");
+        }else{
+            twoCategory.append("<li class='mui-table-view-cell'><a onclick=initBrand('"+c.id+"','"+c.name+"','"+categoryName+"')>"+c.name+"</a></li>");
+        }
+    })
+  })
+}
+//获取参数信息
+function initParam(categoryId){
+  ajax("bi/Mall/queryCatParameter",{"categoryId":categoryId}, null, null, function(data){
+    var datas = {"data":data}
+    var selParam = $("#selParam");
+    var html = template('mallParamContent', datas);
+    selParam.html(html);
+  })
+}
+//选择参数
+function selectedParam(obj){
+    $(obj).siblings().removeClass('active')
+    $(obj).addClass('active')
+}
+
+//清空参数
+function clearSelParam(){
+  params = "";
+  var d = $("li[name='selectedParams']");
+  $.each(d,function(i,c){
+      if($(c).hasClass('active')){
+        $(c).removeClass('active');
+      }
+  })
+  initPullMore()
+  ajaxMallGoodsList();
+  mui('.mui-popover').popover('hide');
+}
+//完成参数
+function submitSelParam(){
+  params = "";
+  var d = $("li[name='selectedParams']");
+  $.each(d,function(i,c){
+      if($(c).hasClass('active')){
+         params += (" " + $(c).children().text());
+      }
+  })
+  initPullMore()
+  ajaxMallGoodsList();
+  mui('.mui-popover').popover('hide');
+}
+//获取品牌信息
+function initBrand(categoryId,categoryName,pName){
+  if(searchText != ""){
+    searchTxt = searchText;
+    $("#categoryNameSpan").html("分类");
+    $("#selBrands").html("<li class='mui-table-view-cell'>请先选择商品分类</li>");
+    $("#selModel").html("<li class='mui-table-view-cell'>请先选择商品品牌</li>");
+    $("#selParam").html("<div class='t12 c999 pleft10'>请先选择商品分类</div>");
+  }else{
+    searchTxt = categoryName;
+    $("#categoryNameSpan").html(pName+"/"+categoryName);
+    $("#inputSearchHtml").html('<input id="searchHtml" type="search" class="mui-input-clear" onclick="toSearch()" placeholder="用品名称">')
+  }
+  params = "";
+  initPullMore()
+  ajaxMallGoodsList();
+  mui('.mui-popover').popover('hide');
+  $("#brandsNameSpan").html("品牌");
+  $("#modelNameSpan").html("型号");
+
+  if(searchText != ""){
+    searchText = "";
+  }else{
+    initParam(categoryId);
+    ajax("bi/Mall/queryBrands",{"categoryId":categoryId}, null, null, function(data){
+      var selBrands = $("#selBrands");
+      $("#selModel").html("<li class='mui-table-view-cell'>请先选择商品品牌</li>");
+      if(data != null){
+        selBrands.html("");
+      }else{
+        selBrands.html("<li class='mui-table-view-cell'>暂无该商品品牌</li>")
+      }
+      $.each(data,function(i,c){
+        selBrands.append("<li class='mui-table-view-cell'><a onclick=initBrandModel('"+c.mallBrands.id+"','"+c.mallBrands.name+"')>"+c.mallBrands.name+"</a></li>");
+      })
+    })
+  }
+
+}
+
+//获取品牌型号信息
+function initBrandModel(brandsId,brandsName){
+  searchTxt += (" " +  brandsName);
+  initPullMore()
+  ajaxMallGoodsList();
+  mui('.mui-popover').popover('hide');
+  $("#brandsNameSpan").html("品牌/"+brandsName);
+  $("#modelNameSpan").html("型号");
+  ajax("bi/Mall/queryBrandsModel",{"brandId":brandsId}, null, null, function(data){
+    var selModel = $("#selModel");
+    if(data != null){
+      selModel.html("");
+    }else{
+      selModel.html("<li class='mui-table-view-cell'>暂无该商品品牌型号</li>")
+    }
+    $.each(data,function(i,c){
+      selModel.append("<li class='mui-table-view-cell'><a onclick=initGoodsList('"+c.name+"')>"+c.name+"</a></li>");
+    })
+  })
+}
+//点击品牌型号
+function initGoodsList(modelName){
+  searchTxt += (" " +  modelName);
+  initPullMore()
+  ajaxMallGoodsList();
+  $("#modelNameSpan").html("型号/"+modelName);
+  mui('.mui-popover').popover('hide');
+}
+//上拉获取更多商品信息
+function pullMore(){
+  if((parseInt(totalRecords/iDisplayLength) +1) > currentPage){
+      iDisplayStart = currentPage * iDisplayLength;
+      currentPage++;
+      ajaxMallGoodsList();
+  }else{
+      $("#pullMoreHtml").html("没有更多数据了......")
+  }
+
+}
+
+//初始化上拉获取信息
+function initPullMore(){
+  currentPage = 1;
+  totalRecords = 0;
+  iDisplayLength = 30;
+  iDisplayStart = 0;
+  $("#pullMoreHtml").html("更多商品 ...")
+}
+
+//获取购物车数量
+function getAmountInCart(){
+  ajax("bi/MallGoodsAction/queryAmountInCart",{}, null, null, function(data){
+    if(data != null){
+          $("#inCartTotal").html(parseFloat(data.total).toFixed(2))
+          $("#inCartAmount").html(data.amount)
+    }else{
+          $("#inCartAmount").html(0)
+          $("#inCartTotal").html(0.00)
+    }
+  })
+}
+
+//进入商品详情
+function toGoodsDetial(id){
+  api.openWin({
+      name: '商品详情',
+      url: '../../html/mall/mallGoodsDetial.html',
+      pageParam: {
+          "goodsId": id
+      }
+  });
+}
+//进入搜索页
+function toSearch(){
+  api.openWin({
+      name: '商品搜索',
+      url: '../../html/mall/mallGoodsSearch.html',
+      pageParam: {
+          "goodsId": ""
+      },
+      reload : true
+  });
+}
+//进入购物车页
+function toShoppingCart(){
+  api.openWin({
+      name: '商品搜索',
+      url: '../../html/mall/shoppingCart.html',
+      pageParam: {
+          "goodsId": ""
+      },
+      reload : true
+  });
+}
+
+//返回上一页
+document.getElementById("closeWin").addEventListener('tap', function() {
+  api.closeWin();
+})
+	mui.init();
+
+	mui.plusReady(function () {
+	});
+
+
+	mui('.mui-scroll-wrapper').scroll();
+	mui('body').on('shown', '.mui-popover', function(e) {
+		//console.log('shown', e.detail.id);//detail为当前popover元素
+	});
+	mui('body').on('hidden', '.mui-popover', function(e) {
+		//console.log('hidden', e.detail.id);//detail为当前popover元素
+	});
+</script>
+</body>
+</html>

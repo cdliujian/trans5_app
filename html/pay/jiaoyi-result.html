@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="../../css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+	<link rel="stylesheet" href="../../css/public.css">
+	<link rel="stylesheet" href="../../css/main.css">
+	<title>确认支付</title>
+</head>
+<body class="t14">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript:api.closeWin()"></a>
+	<h1 class="mui-title">交易结果</h1>
+</header>
+<div class="mui-content bg-white">
+	<div class="p10 mui-text-center qrpay-top mbottom10 mtop49">
+		<img class="mbottom10" src="../../images/quick-order/right-icon.png" width="80"><br>
+		<span class="orange">支付成功</span>
+		<div class="numf tbiger pbottom10" style="line-height: 50px;" id="orderAmount">900.00</div>
+		<a class="mui-btn btn-orange-o mtop49" style="min-width: 150px;" href="javascript:api.closeWin()">确定</a>
+	</div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function(){
+       var orderAmount = api.pageParam.orderAmount
+       $api.html($api.byId("orderAmount"), formatCurrency(orderAmount));  
+    }
+</script>
+</html>

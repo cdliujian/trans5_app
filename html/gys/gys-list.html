@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link rel="stylesheet" href="../../css/mui.min.css" />
+	<link rel="stylesheet" href="../../css/app.css"/>
+	<link rel="stylesheet" href="../../css/public.css">
+	<link rel="stylesheet" href="../../css/main.css">
+	<title></title>
+</head>
+<body class="bg-thingray t13">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left c333" href="javascript: close();"></a>
+	<div class="mui-title pright10" id="headerId">
+	</div>
+
+</header>
+<div class="mui-content">
+	<div class="bg-white border-bottom">
+		<div class="gys-list-top">
+            <img class="gys-list-top-img" src="../../images/gys/gys-bg.png">
+            <div class="gys-list-c">
+                <div class="fl gys-list-img">
+                    <img width="59" id="brandUrl">
+                </div>
+                <div class="fl gys-list-r">
+                    <span class="white t14" id="mainName"></span>
+                    <div class="ptop10">共<span class="orange t13" id="num"></span>家供应商 </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+		</div>
+	</div>
+
+	<div class="bg-white p10 border-bottom">
+		<a href="###" class="orange">报价时间</a>
+		<a href="###" class="gys-cjl">成交量 </a>
+	</div>
+
+</div>
+<script type="text/html" id="supplyList">
+	{{each items as item i}}
+	<div class="bg-white mbottom10">
+		<div class="p10">
+			<div class="border-bottom pbottom6">
+				<span class="xzgys-top-th mtop3">{{item.dept.name}}</span>
+				<span class="t1001 mtop6">{{item.dept.code}}</span>
+				{{if item.cusemer && item.cusmer.isPower == 1}}<img src="../../images/xunjia-maipeijian/piao.png" width="15" height="15"> <img src="../../images/xunjia-maipeijian/t.png" width="15" height="15">{{/if}}
+				{{if item.sender != null && item.sender.starts == 10}}<div class="fr ptop6"><div class="xzgys-top-img xzgys-top-img1"></div></div>{{/if}}
+				<div class="clear"></div>
+			</div>
+			<div class="border-bottom pbottom6">
+				<div class="xzgys-c ptop10 pbottom6 t13">
+					<span class="c999">电话</span>
+					<div class="xzgys-c-r">{{if item.sender != null}}{{item.sender.telphone == undefined ? "" : item.sender.telphone}}{{/if}}</div>
+				</div>
+				<div class="xzgys-c ptop6 pbottom6 t13">
+					<span class="c999">地址</span>
+					<div class="xzgys-c-r">{{item.dept.address == undefined ? "" : item.dept.address}}</div>
+				</div>
+				<div class="xzgys-c ptop6 pbottom6 t13">
+					<span class="c999">主营</span>
+					<div class="xzgys-c-r">{{if item.sender != null}}{{item.sender.businessscope == undefined ? "" : item.sender.businessscope}}{{/if}}</div>
+				</div>
+				<div class="clear"></div>
+			</div>
+			<div class="mui-text-right ptop10">
+				{{if item.sender && item.sender.telphone }}
+				<a class="mui-btn btn-gray-o t12 mright10" href="tel:{{item.sender.telphone}}">联系商家</a>
+				{{else}}
+				<a class="mui-btn btn-gray-o t12 mright10" href="javascript:noTel()">联系商家</a>
+				{{/if}}
+				<a class="mui-btn btn-orange-o t12 mright10" href="###"><span class="gys-btn-star"></span>已收藏</a>
+				<a class="mui-btn btn-orange-o t12" href="javascript:getToBuy('{{item.dept.name}}')">快速下单</a>
+			</div>
+		</div>
+	</div>
+	{{/each}}
+</script>
+<script type="text/javascript" src="../../script/jquery.min.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/template.js"></script>
+<script>
+	  apiready = function(){
+			 //接收传过来的品牌ID和品牌图片url和品牌名字
+			 var brandId = api.pageParam.id;
+			 var imgUrl = api.pageParam.url;
+			 var brandName = api.pageParam.name;
+			 //渲染到页面上
+			 var Name = brandName + "专区";
+			 $('#headerId').text(Name);
+			 $('#mainName').text(brandName);
+			 $('#brandUrl').attr('src',imgUrl);
+			//用品牌ID查找对应供应商数据
+			function init(brandId){
+				var url = 'bi/RangeAction/getRangeBrands';
+				var param = {
+					"method":"post",
+					"dataType":"json",
+					"data": {"body":JSON.stringify({"brandId":parseInt(brandId)})},
+					"header":{"Content-Type":"application/json"}
+				}
+				ajax(url,param,null,null,function(ret){
+					 var data = ret.data.Ranges
+					 var num = data.length;
+					 $('#num').text(num);
+					 var html = template("supplyList", {items: data})
+					 $('body').append(html)
+				})
+			}
+			init(brandId);
+		}
+		function close(){
+			api.closeWin({name:'gys-list'})
+		}
+		function noTel(){
+			api.toast({'msg':"此供应商暂未维护联系电话。"})
+		}
+		 //跳转到快速页面
+		function getToBuy(name){
+            api.openWin({
+                name:"want-buy",
+                url: "../quick-order/want-buy.html",
+                pageParam:{
+					supplyName:name
+                }
+            })
+        };
+		
+
+</script>
+</body>
+</html>

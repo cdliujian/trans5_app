@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <base href="./../../" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link href="css/mui.min.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="css/app.css" />
+	<link href="css/mui.picker.css" rel="stylesheet" />
+	<link href="css/mui.poppicker.css" rel="stylesheet" />
+	<link rel="stylesheet" href="css/public.css">
+	<link rel="stylesheet" href="css/main.css">
+    <title>添加配件</title>
+</head>
+<body class="bg-thingray t13">
+<header class="mui-bar mui-bar-nav bg-f8f8f8 mheader" style="z-index: 1000;height: 46px;">
+	<a class="mui-icon mui-icon-left-nav c333" href="javascript: close();"></a>
+	<div class="mui-title pright10">
+		<div class="mui-input-row mui-search sc-search">
+			<input type="search" class="mui-input-clear" placeholder="输入配件名称" id="partsName">
+		</div>
+	</div>
+	<button class="mui-pull-right mui-btn-link c333 t14" id="confirmBtn" onclick="addPartName($('#partsName').val());">确定</button>
+</header>
+<!--搜索下拉框 显示 请删除display:none-->
+<div class="search-datalist" style="display: none;" id="searchDIV">
+	<ul id="searchUL">
+	</ul>
+</div>
+<div class="mui-content pbottom49">
+	<div class="bg-white mbottom10">
+		<div class="border-bottom p10">
+			<span class="wb-h">常用配件</span>
+		</div>
+		<div class="bg-white p10 search-list">
+			<a href="javascript: addPartName('前保险杠');">前保险杠</a>
+			<a href="javascript: addPartName('前保险杠皮');">前保险杠皮</a>
+			<a href="javascript: addPartName('前杠');">前杠</a>
+			<a href="javascript: addPartName('前杠皮');">前杠皮</a>
+			<a href="javascript: addPartName('中网');">中网</a>
+			<a href="javascript: addPartName('前中网');">前中网</a>			
+			<a href="javascript: addPartName('前格栅');">前格栅</a>
+			<a href="javascript: addPartName('格栅');">格栅</a>
+			<a href="javascript: addPartName('前大灯（左）');">前大灯（左）</a>
+			<a href="javascript: addPartName('前车灯（左）');">前车灯（左）</a>
+			<a href="javascript: addPartName('大灯（左）');">大灯（左）</a>
+			<a href="javascript: addPartName('左前大灯');">左前大灯</a>
+			<a href="javascript: addPartName('散热器');">散热器</a>
+			<a href="javascript: addPartName('水箱');">水箱</a>
+			<a href="javascript: addPartName('前大灯（右）');">前大灯（右）</a>
+			<a href="javascript: addPartName('前车灯（右）');">前车灯（右）</a>
+			<a href="javascript: addPartName('大灯（右）');">大灯（右）</a>
+			<a href="javascript: addPartName('右前大灯');">右前大灯</a>
+			<a href="javascript: addPartName('散热器框架');">散热器框架</a>
+			<a href="javascript: addPartName('水箱框架');">水箱框架</a>
+			<a href="javascript: addPartName('龙门');">龙门</a>
+			<a href="javascript: addPartName('后保险杠');">后保险杠</a>
+			<a href="javascript: addPartName('后保险杠皮');">后保险杠皮</a>
+			<a href="javascript: addPartName('后杠');">后杠</a>
+			<a href="javascript: addPartName('后杠皮');">后杠皮</a>
+			<a href="javascript: addPartName('冷凝器');">冷凝器</a>
+			<a href="javascript: addPartName('冷网');">冷网</a>
+			<a href="javascript: addPartName('散热网');">散热网</a>
+			<a href="javascript: addPartName('机盖');">机盖</a>
+			<a href="javascript: addPartName('前叶子板（左）');">前叶子板（左）</a>
+		</div>
+	</div>
+	<div class="bg-white mbottom10">
+		<div class="border-bottom p10">
+			<span class="wb-h">已添加配件</span>
+		</div>
+		<div id="partsDIV"></div>
+	</div>
+</div>
+<div class="mfooter">
+	<a class="mui-block" href="javascript: doAddParts();">添加配件</a>
+</div>
+<script id="tplPartTable" type="text/html">
+				<div class="border-bottom p10" id="div_{{counter}}"><img class="mright10 fr" src="images/xunjia-maipeijian/bxg.png" width="20" height="20" onclick="deletePartsName('div_{{counter}}', '{{partsName}}');"> {{partsName}}</div>
+</script>
+<script id="tplSearchTable" type="text/html">
+	{{each searchs as search i}} 
+		<li><a href="javascript: setPartsNameValue('{{search}}');"><span class="sd-tips">{{search.substring(0, 1)}}</span>{{search.substring(1)}} <span class="sd-tips-r"></span></a> </li>
+	{{/each}}
+</script>
+</body>
+<script type="text/javascript" src="script/mui.min.js"></script>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery.min.js"></script>
+<script type="text/javascript" src="script/template.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript">
+	var tmpPartsName = ",", counter = 0;
+	apiready = function(){
+	}
+	
+	function close() {
+		api.closeWin({name: "addPartsPage"});
+	}
+	
+	//添加配件
+	function addPartName(partsName) {
+		if($.trim(partsName) == "") {
+			return false;
+		}
+		//console.log(tmpPartsName.indexOf(","+partsName+","));
+		//console.log(tmpPartsName+"------"+partsName);
+		if(tmpPartsName.indexOf(","+partsName+",") == -1) {
+			var html=template("tplPartTable", {"partsName" : partsName, "counter" : counter});
+			//console.log(html);
+			$("#partsDIV").append(html);
+			//console.log($("#partsDIV").html());
+			
+			counter++;
+		}
+		tmpPartsName += partsName + ",";
+	}
+	
+	//删除配件
+	function deletePartsName(divName, partsName) {
+		var obj = $("#" + divName);
+		obj.remove();
+		//console.log(tmpPartsName+"------"+partsName);
+		tmpPartsName = tmpPartsName.replace(","+partsName+",", ",");
+		//console.log(tmpPartsName);
+	}
+	
+	//确定
+	function doAddParts() {
+		tmpPartsName = tmpPartsName.substring(1);
+		if(tmpPartsName == "") {
+			api.toast({"msg":"请输入配件名称添加配件，或者选择常用配件！"});
+			return false;
+		}
+	
+		console.log(tmpPartsName);
+		var jsFun = "addPartsList('" + tmpPartsName + "')";
+		api.execScript({
+			name: "queryMainNextPage",
+			script: jsFun
+		});
+	    
+		api.closeWin();
+	}
+	
+	//搜索
+	function doSearch(obj) {
+		//$('#searchDIV').show();
+		//console.log(obj.value);
+	}
+	
+	//设置搜索值到文本框中
+	function setPartsNameValue(partsName) {
+		$("#partsName").val(partsName);
+		
+		//$('#searchDIV').hide();
+	}
+</script>
+</html>
