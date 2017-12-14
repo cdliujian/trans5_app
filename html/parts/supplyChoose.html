@@ -44,6 +44,7 @@
 						<span class="xzgys-top-th">{{item.dept.name}}</span><span class="t1001">{{item.dept.code}}</span>
 						{{if item.cusmer.isPower == 1}}<img src="images/xunjia-maipeijian/piao.png" width="15" height="15"> <img src="images/xunjia-maipeijian/t.png" width="15" height="15">{{/if}} 
 					</div>
+<<<<<<< HEAD
 					{{if item.sender != null && item.sender.starts == 10}}<div class="xzgys-top-img xzgys-top-img1"></div>{{/if}}
 					{{if item.sender != null && item.sender.starts == 9}}<div class="xzgys-top-img xzgys-top-img2"></div>{{/if}}
 					{{if item.sender != null && item.sender.starts == 8}}<div class="xzgys-top-img xzgys-top-img3"></div>{{/if}}
@@ -55,6 +56,9 @@
 					{{if item.sender != null && item.sender.starts == 2}}<div class="xzgys-top-img xzgys-top-img9"></div>{{/if}}
 					{{if item.sender != null && item.sender.starts == 1}}<div class="xzgys-top-img xzgys-top-img10"></div>{{/if}}
 					{{if item.sender != null && item.sender.starts == 0}}<div class="xzgys-top-img xzgys-top-img11"></div>{{/if}}
+=======
+					{{if item.sender != null && item.sender.starts == 10}} <img src="images/xunjia-maipeijian/star.png" height="10">{{/if}}
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 				</label>
 				<input class="mtop3" name="checkbox" type="checkbox" value="{{i}}">
 			</div>
@@ -102,7 +106,10 @@
 
 	//根据品牌查询供应商
 	function selectSupplyByBrand(brandId) {
+<<<<<<< HEAD
 		console.log(brandId);
+=======
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 		$("#supplierDIV").html("");
 		$.ajax({ url: serverUrl+"bi/RangeAction/getRangeBrands",
 				 headers: {
@@ -116,6 +123,7 @@
 				var ret = JSON.parse(data);
 				if (ret.code != 1000) {
 					api.toast({"msg":ret.message});
+<<<<<<< HEAD
 					setTimeout(function(){	
 						close();
                     },3000);
@@ -125,14 +133,24 @@
 					setTimeout(function(){	
 						close();
                     },3000);
+=======
+					return;
+				} 
+				if(ret.data == null) {
+					close();
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 					return;
 				}
 				
 				if(ret.data.Ranges.length == 0) {
 					api.toast({"msg":"此品牌暂时还没有符合平台要求的诚信供应商！"});
+<<<<<<< HEAD
 					setTimeout(function(){	
 						close();
                     },3000);
+=======
+					close();
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 					return;
 				}
 				
@@ -157,7 +175,11 @@
 				var count_ = 0;
 				for (var i = selectList.length-1; i >= 0; i--) {
 					var item=selectList[i];
+<<<<<<< HEAD
 					//console.log(item);
+=======
+					console.log(item);
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 					if(item.cusmer!=null){
 						var askTime=item.cusmer.askTime==null?0:item.cusmer.askTime;
 						var Amount=item.cusmer.sucessAskAmount==null?0:item.cusmer.sucessAskAmount;
@@ -174,9 +196,13 @@
 				}
 				if($("#supplierDIV").html() == "") {
 					api.toast({"msg":"此品牌暂时还没有符合平台要求的诚信供应商！"});
+<<<<<<< HEAD
 					setTimeout(function(){	
 						close();
                     },3000);
+=======
+					close();
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 					return;
 				}
 			}

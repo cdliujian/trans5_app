@@ -24,7 +24,11 @@
 		<div class="fqxj-list">
 			<input type="text" placeholder="输入17位车架号，默认17个0" id="vin" maxlength="17" onblur="value=value.replace(/[^\w\.\/]/ig,'');" style="text-transform:uppercase;">
 		</div>
+<<<<<<< HEAD
 		<a class="fqxj-list-a" href="javascript: doChooseBrandAndVehicle();">精友定型</a>
+=======
+		<a class="fqxj-list-a" href="###">精友定型</a>
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 	</div>
 	<div class="bg-white mbottom10 p10 pbottom0">
 		<div class="border-bottom pbottom10">
@@ -82,7 +86,11 @@
 	</div>
 </div>
 <div class="mfooter">
+<<<<<<< HEAD
 	<a class="mui-block" href="javascript: next();">下一步</a>
+=======
+	<a class="mui-block" href="###" disabled>下一步</a>
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 </div>
 </body>
 <script type="text/javascript" src="script/api.js"></script>
@@ -95,7 +103,10 @@
 	var selectSupplyIds = ""; //指定供应商id串
 	var jyFlag = false; //判断是否进行精友定型
 	var isInvoice = ""; //增值税专用发票
+<<<<<<< HEAD
 	var vehicleId = ""; //车型Id
+=======
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 	var QueryMain = new Object();
 	apiready = function(){	         
 		if (/Android/gi.test(navigator.userAgent)) {
@@ -181,6 +192,7 @@
 	}
 	
 	//选中品牌后设置到品牌信息中
+<<<<<<< HEAD
 	function selectBrand(brandName, logo, brandId_, brandCode_, vehicleId_, modelName) {
 		$("#brandNameImg").attr("src", logo);
 		$("#brandName").html(brandName);
@@ -196,6 +208,12 @@
 		if(modelName != undefined) {
 			$("#carModel").val(modelName);
 		}
+=======
+	function selectBrand(brandName, logo, brandId_) {
+		$("#brandNameImg").attr("src", logo);
+		$("#brandName").html(brandName);
+		selectBrandId = brandId_;
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 		
 		if($("#selectDeptNames").val() != "") {
 			selectSupplyIds = "";
@@ -212,12 +230,15 @@
 			api.toast({"msg":"请先选择品牌再选择供应商！"});
 			return;
 		}
+<<<<<<< HEAD
 		
 		if(selectBrandId == "") {
 			api.toast({"msg":"此品牌暂时还没有符合平台要求的诚信供应商！"});
 			return;
 		}
 		
+=======
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 		api.openWin({
 		    name: "supplyChoosePage",
 		    url: "./supplyChoose.html",
@@ -230,6 +251,7 @@
 	
 	//选中供应商后设置到供应商中
 	function selectSupply(supplierIds, supplierNames, tmpIsInvoice) {
+<<<<<<< HEAD
 		if(supplierIds != "") {
 			$("#selectDeptNames").val(supplierNames);
 			selectSupplyIds = supplierIds;
@@ -357,6 +379,18 @@
 		    	QueryMain: QueryMain
 		    }
 		});
+=======
+		$("#selectDeptNames").val(supplierNames);
+		selectSupplyIds = supplierIds;
+		isInvoice = tmpIsInvoice;
+		var html = $("#selectDeptNamesA").html();
+		$("#selectDeptNamesA").html(html.replace("最多可选择3家供应商发起询价", supplierNames));
+	}
+
+	//设置车型
+	function selectCarModel(modelName) {
+		$("#carModel").val(modelName);
+>>>>>>> 0c6568e4e447785bf928973d290af8e24d765992
 	}
 </script>
 </html>
